@@ -1,0 +1,32 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.3.32811.315
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "ReGress", "ReGress.pyproj", "{0D272706-2DBA-495E-8067-C5EB0F588888}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{F76B8610-F69E-45DD-8615-0C2EEB97FFD1}"
+	ProjectSection(SolutionItems) = preProject
+		logic_lib.py = logic_lib.py
+		ReGress_methods.py = ReGress_methods.py
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0D272706-2DBA-495E-8067-C5EB0F588888}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0D272706-2DBA-495E-8067-C5EB0F588888}.Release|Any CPU.ActiveCfg = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{0D272706-2DBA-495E-8067-C5EB0F588888} = {F76B8610-F69E-45DD-8615-0C2EEB97FFD1}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F2ED3CC4-67CA-42F9-96AE-F0C7330B8497}
+	EndGlobalSection
+EndGlobal
