@@ -2,6 +2,54 @@ from tkinter.messagebox import showinfo
 from tkinter import filedialog as fd
 import pandas as pd
 
+import seaborn as sns
+import numpy as np
+        
+import matplotlib.pyplot as plt
+import matplotlib as mpl
+
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn import linear_model
+
+import statsmodels.api as sm
+from statsmodels.stats.outliers_influence import variance_inflation_factor
+from pyprocessmacro import Process
+
+
+class MMREG_PROC():
+    def __init__(self, df_arg, df_headers, x_vars, y_var):
+        self.df = df_arg
+        self.y_sample = self.df[y_var]
+        
+        to_drop = []
+        for val in df_headers:
+            if not(val in x_vars):
+                to_drop.append(val)
+
+        self.x_sample = self.df.drop(to_drop, axis = 1)
+        
+    
+    def get_mmreg_prediction_plot(self):
+        self.lr_model = LinearRegression()
+        self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(self.x_sample, self.y_sample, test_size = 0.3, random_state = 0)
+        self.lr_model.fit(self.X_train, self.y_train)
+        self.y_pred = self.lr_model.predict(self.X_train)
+    
+        return [self.y_train, self.y_pred]
+
+    def get_stat_result(self):
+        _x = sm.add_constant(self.x_sample)
+        model = sm.OLS(self.y_sample, _x).fit()
+        predictions = model.predict(_x) 
+        reg_ressult = model.summary()
+
+        return reg_ressult
+
+    def debug_print(self):
+        print("Selected X = ", self.x_sample, " \n ", "Selected Y = ", self.y_sample)
+
+
 
 
 class MMREG_PROCS():
@@ -17,22 +65,6 @@ class MMREG_PROCS():
     self.y_sample = main_df_arg[y_axis]
     self.proc_title = title_arg
    
-
-  def initialize():
-      import seaborn as sns
-      import numpy as np
-        
-      import matplotlib.pyplot as plt
-      import matplotlib as mpl
-
-      from sklearn.model_selection import train_test_split
-      from sklearn.linear_model import LinearRegression
-      from sklearn import linear_model
-
-      import statsmodels.api as sm
-      from statsmodels.stats.outliers_influence import variance_inflation_factor
-      from pyprocessmacro import Process
-
 
   def get_init_val(self):
     print("X sample: ", self.x_sample)
