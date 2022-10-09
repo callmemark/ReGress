@@ -4,11 +4,13 @@ from re import T
 from turtle import width
 import pandas as pd
 from pandastable import Table, config
+
 import logic_lib as lgb
+import ReGress_methods as RgM
 
 import tkinter as tk
-from tkinter import VERTICAL, ttk
-from tkinter import X, TOP, W, HORIZONTAL, VERTICAL, BOTH, FLAT, BOTTOM
+from tkinter import LEFT, VERTICAL, LabelFrame, ttk
+from tkinter import X, TOP, LEFT, RIGHT, BOTTOM, W, HORIZONTAL, VERTICAL, BOTH, FLAT, BOTTOM
 
 import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
@@ -40,7 +42,8 @@ class ReGress():
         # handles the visibility state of the side menu panel
         self.mpannel_vsblty_state = {
             "df_editor_frame" : False,
-            "mmreg_frame" : False
+            "mmreg_frame" : False,
+            "corl_matrix_btn" : False
             }
         
         # MMREG VARIABLES ##
@@ -65,14 +68,35 @@ class ReGress():
             highlightthickness = 0,
             pady = 10,
             padx = 7,
-            foreground = self.font_color_white
+            foreground = self.font_color_white,
+            background = self.main_accent_color
+            )
+
+        menubtn_theme_style = ttk.Style()
+        menubtn_theme_style.configure(
+            "TMenubutton",
+            font=('Arial', 10),
+            borderwidth = 0,
+            relief = FLAT,
+            highlightthickness = 0,
+            pady = 10,
+            padx = 7,
+            foreground = self.font_color_white,
+            background = self.main_accent_color
+            )
+
+        radiobtn_theme_style = ttk.Style()
+        radiobtn_theme_style.configure(
+            "TRadiobutton",
+            borderwidth = 0
             )
         
         label_theme_style = ttk.Style()
         label_theme_style.configure(
             "TLabel",
             font=('Arial', 10),
-            foreground = self.font_color_white
+            foreground = self.font_color_white,
+            background = self.main_accent_color
             )
 
         lframe_custom_theme = ttk.Style()
@@ -120,6 +144,14 @@ class ReGress():
             bordercolor = self.main_accent_color
             )
 
+        tool_lframe_custom_theme = ttk.Style()
+        tool_lframe_custom_theme.configure(
+            'tool_lframe.TFrame',
+            relief = 'solid',
+            background = "#1c1c1c",
+            bordercolor = "#1c1c1c"
+            )
+
 
         
 
@@ -127,24 +159,25 @@ class ReGress():
         self.init_tool_nav_frame()
         self.init_main_activity_panel()
 
-        
         self.init_result_panel()
         self.init_tool_menu_panel()
 
+
         self.file_selection_tool_menu_frame()
         self.file_selection_result_frame()
+
         self.MMREG_result_frame()
-
-
-        ## initialize Submenus ##
         self.init_MMREG_tool_menu_frame()
+
+        self.init_correlation_matrix_tool_menu_frame()
+        self.init_correlation_matrix_result_frame()
+
 
 
         # run startup dataframe viewer on start as inital viewport
         #self.tool_menu_varselect_panel.add(self.df_editing_tool_menu_farame)
         #self.result_panel.add(self.df_table_result_frame)
         
-
 
     def init_tool_nav_frame(self):
         # create the header navigation panel
@@ -182,9 +215,9 @@ class ReGress():
         # create a button in top navigation panel for creating a matrix relationship options
         matrix_tab_btn = ttk.Button(
             head_nav_frame, 
-            text = "LINREG", 
+            text = "CMATRIX", 
             style = "nav_tool.TButton",
-            command = lambda: self.update_side_menu_view("matrix_btn"))
+            command = lambda: self.update_side_menu_view("corl_matrix_btn"))
         
         # create a button in top navigation panel for mediator regression
         med_reg_tab_btn = ttk.Button(
@@ -277,20 +310,23 @@ class ReGress():
             labelwidget = x_var_selection_frame_label
             )
 
+
         # Create a menu button listing all the variables in the dataframe
         selected_var = tk.StringVar()
-        x_axis_col_slctn_btn = tk.Menubutton(
-            x_var_selection_frame, 
-            text = "Variables"
-             )
 
-        x_axis_col_slctn_menu = tk.Menu(x_axis_col_slctn_btn,tearoff=0)
+        new_x_axis_col_slctn_menu_btn = RgM.create_menu_btn(
+            tk_arg = tk, 
+            ttk_arg = ttk,
+            frame_parent_arg = x_var_selection_frame, 
+            text_arg = "Variables",
+            stringvar_arg = selected_var, 
+            menu_value_arg = self.df_headers
+            )
 
-        # create options for menu
-        for col_name in self.df_headers:
-            x_axis_col_slctn_menu.add_radiobutton(label = col_name, value = col_name, variable = selected_var)
+        x_axis_col_slctn_btn = new_x_axis_col_slctn_menu_btn["MenuButton"]
+        x_axis_col_slctn_btn["menu"] = new_x_axis_col_slctn_menu_btn["RadioButton"]
 
-        x_axis_col_slctn_btn["menu"] = x_axis_col_slctn_menu
+
 
         # button assigning varible to the x axis
         assign_col_btn = ttk.Button(
@@ -328,16 +364,17 @@ class ReGress():
             )
 
         # x_var_selection_frame Grid layout
-        x_axis_col_slctn_btn.grid(row = 0, column = 0, pady = 2)
-        assign_col_btn.grid(row = 1, column = 0, pady = 2)
-        unassign_col_btn.grid(row = 1, column = 1, pady = 2)
-        assign_y_axis_btn.grid(row = 2, column = 0, pady = 2)
+        x_axis_col_slctn_btn.grid(row = 0, column = 0, sticky = "nsew",  pady = 1, padx = 1)
+        assign_col_btn.grid(row = 1, column = 0, sticky = "nsew", pady = 1, padx = 1)
+        unassign_col_btn.grid(row = 1, column = 1, sticky = "nsew", pady = 1, padx = 1)
+        assign_y_axis_btn.grid(row = 2, column = 0,  sticky = "nsew", pady = 1, padx = 1)
 
         ## grid system variable_selection_frame ##
         x_var_selection_frame.grid(row = 0, column = 0, sticky = "nsew", pady = 2)
-        self.xaxis_var_disp_frame.grid(row = 0, column = 1, sticky = "nsew", pady = 2)
-        self.yaxis_var_disp_frame.grid(row = 0, column = 2, sticky = "nsew", pady = 2)
+        self.xaxis_var_disp_frame.grid(row = 0, column = 1, sticky = "nsew", pady = 2, padx = 2)
+        self.yaxis_var_disp_frame.grid(row = 0, column = 2, sticky = "nsew", pady = 2, padx = 2)
 
+         
 
 
     def init_result_panel(self):
@@ -349,6 +386,10 @@ class ReGress():
 
         # mact | main activity window
         self.mact_panel.add(self.result_panel)
+
+
+    def init_plot_result_panel(self):
+        pass
 
 
 
@@ -384,6 +425,18 @@ class ReGress():
         pt.show()
 
 
+    def open_dataset(self, row_skip):
+        data_return = lgb.FileSys().open_dataset_by_file(row_skip)
+
+        if type(data_return) != type(None):
+            # if opening new file reset self.reg_x_axis list 
+            self.reg_x_axis.clear()
+            self.dataset = data_return
+            self.df_headers = tuple(self.dataset.columns)
+
+            self.update_file_selection_result_frame(self.dataset)
+            self.init_var_selection_submenu_frame()
+
 
     def init_MMREG_tool_menu_frame(self):
         # create the main frame or a root frame of the tool menu for multiple linear regresssion
@@ -397,55 +450,202 @@ class ReGress():
             style = 'tool_lframe.TLabelframe'
             )
 
+
+        # fit intercept parameter UI frame
+        # create menu button for selecting MMREG fit intercetp parameter
+        fit_intcept_param_frame = ttk.Frame(
+            self.mmreg_tool_menu_submenu_frame,
+            style = 'tool_lframe.TFrame'
+            )
+
+        fit_intcept_param_label = ttk.Label(
+            fit_intcept_param_frame,
+            text = "Fit Intercept")
+
+        
+        fit_intcept_param_label_strvar = tk.StringVar()
+        new_fit_intcept_menubtn = RgM.create_menu_btn(
+            tk_arg = tk, 
+            ttk_arg = ttk,
+            frame_parent_arg = fit_intcept_param_frame, 
+            text_arg = "Default Val: True",
+            stringvar_arg = fit_intcept_param_label_strvar, 
+            menu_value_arg = ["True", "False"]
+            )
+
+        fit_intcept_param_label_menutbn = new_fit_intcept_menubtn["MenuButton"]
+        fit_intcept_param_label_menutbn["menu"] = new_fit_intcept_menubtn["RadioButton"]
+
+
+
+        # positive parameter UI frame
+        # create menu button for selecting MMREG normalize parameter
+        positive_coef_mmreg_param_frame = ttk.Frame(
+            self.mmreg_tool_menu_submenu_frame,
+            style = 'tool_lframe.TFrame'
+            )
+
+        positive_coef_mmreg_param_label = ttk.Label(
+            positive_coef_mmreg_param_frame,
+            text = "Force Positive Coef")
+
+         
+        positive_coef_mmreg_param_strvar = tk.StringVar()
+        new_positive_coef_mmreg_param_menubtn = RgM.create_menu_btn(tk_arg = tk, 
+            ttk_arg = ttk,
+            frame_parent_arg = positive_coef_mmreg_param_frame, 
+            text_arg = "Default Val: False",
+            stringvar_arg = positive_coef_mmreg_param_strvar, 
+            menu_value_arg = ["True", "False"]
+            )
+
+        positive_coef_mmreg_param_menubtn = new_positive_coef_mmreg_param_menubtn["MenuButton"]
+        positive_coef_mmreg_param_menubtn["menu"] = new_positive_coef_mmreg_param_menubtn["RadioButton"]
+
+
+
+        # positive parameter UI frame
+        # create entry widget for selecting MMREG njob parameter
+        njob_mmreg_param_frame = ttk.Frame(
+            self.mmreg_tool_menu_submenu_frame,
+            style = 'tool_lframe.TFrame'
+            )
+
+        njob_mmreg_param_label = ttk.Label(
+            njob_mmreg_param_frame,
+            text = "Number of Jobs")
+
+        njob_param_inp_strvar = tk.StringVar()
+        njob_param_entry = ttk.Entry(njob_mmreg_param_frame, textvariable = njob_param_inp_strvar)
+
+
+
+
+        # positive parameter UI frame
+        # create menu button for selecting MMREG normalize parameter
+        stat_output_mmreg_param_frame = ttk.Frame(
+            self.mmreg_tool_menu_submenu_frame,
+            style = 'tool_lframe.TFrame'
+            )
+
+        stat_output_mmreg_param_label = ttk.Label(
+            stat_output_mmreg_param_frame,
+            text = "Stats Result Output")
+
+         
+        stat_output_mmreg_param_strvar = tk.StringVar()
+        new_stat_output_mmreg_param_menubtn = RgM.create_menu_btn(tk_arg = tk, 
+            ttk_arg = ttk,
+            frame_parent_arg = stat_output_mmreg_param_frame, 
+            text_arg = "Default Val: StatModel",
+            stringvar_arg = stat_output_mmreg_param_strvar, 
+            menu_value_arg = ["StatModel", "ScikiLearn"]
+            )
+
+        stat_output_mmreg_param_menubtn = new_stat_output_mmreg_param_menubtn["MenuButton"]
+        stat_output_mmreg_param_menubtn["menu"] = new_stat_output_mmreg_param_menubtn["RadioButton"]
+
+
+
+
         # Button that update the Multiple linear regression plot and stat result
         diplay_plot_btn = ttk.Button(
             self.mmreg_tool_menu_submenu_frame, 
             text = "Refresh Plot Output", 
-            command = lambda: self.MMREG_update_result_output_plot())
+            command = lambda: self.MMREG_update_result_output_plot(
+                fit_intercept_param = fit_intcept_param_label_strvar.get(),
+                positive_coef_param = positive_coef_mmreg_param_strvar.get(),
+                njob_param = njob_param_inp_strvar.get(),
+                stat_ouput_source = stat_output_mmreg_param_strvar.get()
+                ))
 
+
+        # fit_intcept_param_frame layout
+        fit_intcept_param_label.pack(side = LEFT, fill = X, pady = 2)
+        fit_intcept_param_label_menutbn.pack(side = RIGHT, fill = X, pady = 2)
+
+        # normalize parame frame layout
+        positive_coef_mmreg_param_label.pack(side = LEFT, fill = X, pady = 2)
+        positive_coef_mmreg_param_menubtn.pack(side = RIGHT, fill = X, pady = 2)
+
+        # njob param frame layout
+        njob_mmreg_param_label.pack(side = LEFT, fill = X, pady = 2)
+        njob_param_entry.pack(side = RIGHT, fill = X, pady = 2)
+
+        # stat model frame layout
+        stat_output_mmreg_param_label.pack(side = LEFT, fill = X, pady = 2)
+        stat_output_mmreg_param_menubtn.pack(side = RIGHT, fill = X, pady = 2)
+
+        # mmreg_tool_menu_submenu_frame grid layout
+        fit_intcept_param_frame.pack(fill = X, padx = 5, pady = 1)
+        positive_coef_mmreg_param_frame.pack(fill = X, padx = 5, pady = 1)
+        njob_mmreg_param_frame.pack(fill = X, padx = 5, pady = 1)
+        stat_output_mmreg_param_frame.pack(fill = X, padx = 5, pady = 1)
         diplay_plot_btn.pack(fill = X, padx = 5, pady = 15)
         
 
 
     def MMREG_result_frame(self):
         ## Multiple Linear regression result frame ##
-        self.mmreg_result_panel = ttk.PanedWindow(
-            self.result_panel, 
-            height = self.main_ui_height, 
-            width = self.tool_menu_frame_width)
+        new_mmreg_result_multiPanels = RgM.create_multi_result_panel(
+            ttk_arg = ttk, 
+            tk_arg = tk, 
+            orientation_arg = HORIZONTAL,
+            parent_root_frame = self.result_panel, 
+            height_arg = self.main_ui_height, 
+            width_arg = self.tool_menu_frame_width,
+            text_fill = BOTH
+            )
 
-        # display the plot of the multiple linear regression
-        self.mmreg_res_plot_panel = ttk.PanedWindow(
-            self.mmreg_result_panel, orient = HORIZONTAL,
-            height = self.main_ui_height, 
-            width = self.main_ui_width)
-
-        self.mmreg_result_panel.add(self.mmreg_res_plot_panel)
-
-
-        # display the statistical result of the regression
-        self.mmreg_res_text_panel = ttk.PanedWindow(
-            self.mmreg_result_panel, orient = HORIZONTAL, 
-            height = self.main_ui_height, 
-            width = self.main_ui_width)
-
-        self.mmreg_result_panel.add(self.mmreg_res_text_panel)
-        self.MMREG_stat_res_frame = tk.Text(self.mmreg_res_text_panel)
-        self.MMREG_stat_res_frame.pack(fill = BOTH)
+        self.mmreg_result_panel = new_mmreg_result_multiPanels["parent_panel"]
+        self.mmreg_res_plot_panel = new_mmreg_result_multiPanels["plotting_panel"]
+        self.mmreg_res_text_panel = new_mmreg_result_multiPanels["text_output_panel"]
+        self.MMREG_stat_res_text_space = new_mmreg_result_multiPanels["text_output_display"]
         
 
 
-    def MMREG_update_result_output_plot(self):
-        REG_CLASS = lgb.REG_PROC(self.dataset, self.df_headers, self.reg_x_axis, self.reg_y_axis)
-        # create figure for the plot
+    def MMREG_update_result_output_plot(self, fit_intercept_param, positive_coef_param, njob_param, stat_ouput_source):
+        # check variable valur
+        if stat_ouput_source ==  "":
+            stat_ouput_source = "StatModel"
 
+        if fit_intercept_param == None or fit_intercept_param == "":
+            fit_intercept_param = True
+
+        if positive_coef_param == None or positive_coef_param == "":
+            positive_coef_param = False
+
+        if njob_param != None:
+            if njob_param == '':
+                njob_param = None
+
+            try:
+                njob_param = int(njob_param) 
+            except:
+                njob_param = None
+
+
+        # initialize REGPROC Class
+        REG_CLASS = lgb.REG_PROC(
+            df_arg = self.dataset, 
+            df_headers = self.df_headers, 
+            x_vars = self.reg_x_axis, 
+            y_var = self.reg_y_axis)
+
+        # create figure for the plot
         for widget in self.mmreg_res_plot_panel.winfo_children():
             widget.destroy()
 
-        mmreg_output_axis = REG_CLASS.get_mmreg_prediction_plot()
+        mmreg_output_axis = REG_CLASS.get_mmreg_prediction_plot(
+            fit_intercept_arg = fit_intercept_param,
+            positive_coef_arg = positive_coef_param,
+            njob_arg = njob_param
+            )
+
         x_axis = mmreg_output_axis[0]
         y_axis = mmreg_output_axis[1]
 
+        plt.style.use("dark_background")
         fig = Figure(figsize=(5, 4), dpi=100)
         ax1 = fig.subplots()
         #fig.add_subplot(111).scatter(x_axis, y_axis)
@@ -460,11 +660,17 @@ class ReGress():
         toolbar.update()
         canvas.get_tk_widget().pack(side = TOP, fill = BOTH, expand=1)
 
-        self.MMREG_stat_res_frame['state'] = 'normal'
-        self.MMREG_stat_res_frame.delete("1.0","end")
-        stat_res = REG_CLASS.get_mmreg_stat_result()
-        self.MMREG_stat_res_frame.insert("1.0", stat_res)
-        self.MMREG_stat_res_frame['state'] = 'disabled'
+
+        self.MMREG_stat_res_text_space['state'] = 'normal'
+        self.MMREG_stat_res_text_space.delete("1.0","end")
+
+        if stat_ouput_source ==  "StatModel":
+            stat_res = REG_CLASS.get_mmreg_stat_result()
+        elif stat_ouput_source == "ScikiLearn":
+            stat_res = REG_CLASS.get_sklearn_mmreg_result()
+
+        self.MMREG_stat_res_text_space.insert("1.0", stat_res)
+        self.MMREG_stat_res_text_space['state'] = 'disabled'
         
 
 
@@ -483,10 +689,10 @@ class ReGress():
 
     def update_mmreg_xaxis(self, add = True, axis = "X", val = "str"):
         if axis == "X":
-            if add and not(val in self.reg_x_axis):
+            if add and not(val in self.reg_x_axis) and val != "":
                 self.reg_x_axis.append(val)
             
-            elif not add and val in self.reg_x_axis:
+            elif not add and val in self.reg_x_axis and val != "":
                 self.reg_x_axis.remove(val)
 
             # Remove all the woidgets in the sidplay frame to prevent sidgets with same text value
@@ -506,13 +712,63 @@ class ReGress():
             self.create_new_label(self.reg_y_axis, axis)
 
 
+    def init_correlation_matrix_tool_menu_frame(self):
+        corl_matrix_frame_label = ttk.Label(text="Correlation Matix")
+        self.corl_matrix_menu_submenu_frame = ttk.Labelframe(
+            self.tool_submenu_config_panel,
+            labelwidget = corl_matrix_frame_label,
+            padding = 1,
+            height = self.main_ui_height,
+            width = self.tool_menu_frame_width,
+            style = 'tool_lframe.TLabelframe'
+            )
 
-    def open_dataset(self, row_skip):
-        self.dataset = lgb.FileSys().open_dataset_by_file(row_skip)
-        self.df_headers = tuple(self.dataset.columns)
-        self.update_file_selection_result_frame(self.dataset)
 
-        self.init_var_selection_submenu_frame()
+        refresh_corl_maatrix_plot = ttk.Button(
+            self.corl_matrix_menu_submenu_frame, 
+            text = "Refresh Correlation Matrix Output", 
+            command = lambda: self.update_correlation_matrix_result_frame())
+        
+        refresh_corl_maatrix_plot.pack(fill = X)
+
+
+    def init_correlation_matrix_result_frame(self):
+        new_corl_matrix_result_multiPanels = RgM.create_multi_result_panel(
+            ttk_arg = ttk, 
+            tk_arg = tk, 
+            orientation_arg = HORIZONTAL,
+            parent_root_frame = self.result_panel, 
+            height_arg = self.main_ui_height, 
+            width_arg = self.tool_menu_frame_width,
+            text_fill = BOTH
+            )
+
+        self.corl_matrix_result_panel = new_corl_matrix_result_multiPanels["parent_panel"]
+        self.corl_matrix_plotting_panel = new_corl_matrix_result_multiPanels["plotting_panel"]
+        self.corl_text_output_disp_widget = new_corl_matrix_result_multiPanels["text_output_display"]
+
+
+
+    def update_correlation_matrix_result_frame(self):
+        for widget in self.corl_matrix_plotting_panel.winfo_children():
+            widget.destroy()
+
+        plt.style.use("dark_background")
+        fig = Figure(figsize=(5, 4), dpi=100)
+        ax1 = fig.subplots()
+
+        corrMatrix = self.dataset[self.reg_x_axis].corr()
+        sns.heatmap(corrMatrix, annot=True, ax = ax1)
+
+        # add the plot and the tool control of matplotlib to the mmreg_res_plot_panel
+        canvas = FigureCanvasTkAgg(fig, master = self.corl_matrix_plotting_panel) 
+        canvas.draw()
+        canvas.get_tk_widget().pack(side = TOP, fill = BOTH, expand=1)
+
+        toolbar = NavigationToolbar2Tk(canvas, self.corl_matrix_plotting_panel)
+        toolbar.update()
+        canvas.get_tk_widget().pack(side = TOP, fill = BOTH, expand=1)
+
 
 
     def update_side_menu_view(self, btn_click_arg):
@@ -532,27 +788,38 @@ class ReGress():
                 self.tool_menu_varselect_panel.remove(self.df_editing_tool_menu_farame)
                 self.result_panel.remove(self.df_table_result_frame)
                 
-
-             
             if frame == "mmreg_frame" and self.mpannel_vsblty_state[frame] == True and btn_click_arg != "mmreg_frame":
                 self.mpannel_vsblty_state["mmreg_frame"] = False
                 self.tool_menu_varselect_panel.remove(self.variable_selection_frame)
                 self.tool_submenu_config_panel.remove(self.mmreg_tool_menu_submenu_frame)
                 self.result_panel.remove(self.mmreg_result_panel)
 
+            if frame == "corl_matrix_btn" and self.mpannel_vsblty_state[frame] == True and btn_click_arg != "corl_matrix_btn":
+                self.mpannel_vsblty_state["corl_matrix_btn"] = False
+                self.tool_menu_varselect_panel.remove(self.variable_selection_frame)
+                self.tool_submenu_config_panel.remove(self.corl_matrix_menu_submenu_frame)
+                self.result_panel.remove(self.corl_matrix_result_panel)
         
+
         # handle if frame is shown already, if not. Show
         if btn_click_arg == "df_editor_frame" and self.mpannel_vsblty_state["df_editor_frame"] == False:
-                self.mpannel_vsblty_state["df_editor_frame"] = True 
-                self.tool_menu_varselect_panel.add(self.df_editing_tool_menu_farame)
-                self.result_panel.add(self.df_table_result_frame)
+            self.mpannel_vsblty_state["df_editor_frame"] = True 
+            self.tool_menu_varselect_panel.add(self.df_editing_tool_menu_farame)
+            self.result_panel.add(self.df_table_result_frame)
 
         elif btn_click_arg == "mmreg_frame" and self.mpannel_vsblty_state["mmreg_frame"] == False:
-                self.mpannel_vsblty_state["mmreg_frame"] = True
-                self.tool_menu_varselect_panel.add(self.variable_selection_frame)
-                self.tool_submenu_config_panel.add(self.mmreg_tool_menu_submenu_frame)
-                self.result_panel.add(self.mmreg_result_panel)
-                
+            self.mpannel_vsblty_state["mmreg_frame"] = True
+            self.tool_menu_varselect_panel.add(self.variable_selection_frame)
+            self.tool_submenu_config_panel.add(self.mmreg_tool_menu_submenu_frame)
+            self.result_panel.add(self.mmreg_result_panel)
+
+        elif btn_click_arg == "corl_matrix_btn" and self.mpannel_vsblty_state["corl_matrix_btn"] == False:
+            self.mpannel_vsblty_state["corl_matrix_btn"] = True
+            self.tool_menu_varselect_panel.add(self.variable_selection_frame)
+            self.tool_submenu_config_panel.add(self.corl_matrix_menu_submenu_frame)
+            self.result_panel.add(self.corl_matrix_result_panel)
+            
+               
 
  
 def main():
