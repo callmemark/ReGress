@@ -23,26 +23,54 @@ class REG_PROC():
         self.df = df_arg
         self.y_sample = self.df[y_var]
         self.x_sample = self.df[x_vars]
+
+        self.selected_var = x_vars
         
-    def get_mmreg_prediction_plot(self):
-        self.lr_model = LinearRegression()
+    def get_mmreg_prediction_plot(self, fit_intercept_arg, positive_coef_arg, njob_arg):
         self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(self.x_sample, self.y_sample, test_size = 0.3, random_state = 0)
+
+        self.lr_model = LinearRegression(
+            fit_intercept = fit_intercept_arg,
+            positive = positive_coef_arg,
+            n_jobs = njob_arg,
+            copy_X = False
+            )
+
         self.lr_model.fit(self.X_train, self.y_train)
         self.y_pred = self.lr_model.predict(self.X_train)
-    
+        
+        print("fit_intercept_arg : ", fit_intercept_arg, "\n", "positive_coef_arg: ", positive_coef_arg, "\n", "njob_arg", njob_arg)
+
         return [self.y_train, self.y_pred]
+        
+    
+    def get_sklearn_mmreg_result(self):
+        coef_data = [] 
+        coef_res = self.lr_model.coef_
+
+        try:
+            for i in range(len(self.selected_var)):
+                val_arr = [self.selected_var[i], coef_res[i]]
+                coef_data.append(val_arr)
+
+            result_df = pd.DataFrame(coef_data, columns = ["Variable", "Coef"])
+        except:
+            result_df = "Error processing in method - get_sklearn_mmreg_result"
+
+
+        return result_df
+
 
     def get_mmreg_stat_result(self):
         _x = sm.add_constant(self.x_sample)
         model = sm.OLS(self.y_sample, _x).fit()
         predictions = model.predict(_x) 
         reg_ressult = model.summary()
-
+        
         return reg_ressult
 
     def debug_print(self):
         print("Selected X = ", self.x_sample, " \n ", "Selected Y = ", self.y_sample)
-
 
 
 
@@ -75,14 +103,17 @@ class FileSys():
                 except:
                     _df = pd.read_excel(file_selected, skiprows = row_skip_val)
 
-                return _df
-
                 showinfo(
                     title ='Status',
                     message = "File opened sucesfully"
                 )
+
+                return _df
+
             except:
                 showinfo(
                     title ='Status',
                     message = "Failed to open file"
                 )
+
+                return None
