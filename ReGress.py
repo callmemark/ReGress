@@ -42,7 +42,8 @@ class ReGress():
         # handles the visibility state of the side menu panel
         self.mpannel_vsblty_state = {
             "df_editor_frame" : False,
-            "mmreg_frame" : False
+            "mmreg_frame" : False,
+            "corl_matrix_btn" : False
             }
         
         # MMREG VARIABLES ##
@@ -158,17 +159,19 @@ class ReGress():
         self.init_tool_nav_frame()
         self.init_main_activity_panel()
 
-        
         self.init_result_panel()
         self.init_tool_menu_panel()
 
+
         self.file_selection_tool_menu_frame()
         self.file_selection_result_frame()
+
         self.MMREG_result_frame()
-
-
-        ## initialize Submenus ##
         self.init_MMREG_tool_menu_frame()
+
+        self.init_correlation_matrix_tool_menu_frame()
+        self.init_correlation_matrix_result_frame()
+
 
 
         # run startup dataframe viewer on start as inital viewport
@@ -212,9 +215,9 @@ class ReGress():
         # create a button in top navigation panel for creating a matrix relationship options
         matrix_tab_btn = ttk.Button(
             head_nav_frame, 
-            text = "LINREG", 
+            text = "CMATRIX", 
             style = "nav_tool.TButton",
-            command = lambda: self.update_side_menu_view("matrix_btn"))
+            command = lambda: self.update_side_menu_view("corl_matrix_btn"))
         
         # create a button in top navigation panel for mediator regression
         med_reg_tab_btn = ttk.Button(
@@ -385,6 +388,10 @@ class ReGress():
         self.mact_panel.add(self.result_panel)
 
 
+    def init_plot_result_panel(self):
+        pass
+
+
 
     def file_selection_tool_menu_frame(self):
         # This method handles UI for Dataframe manipulation
@@ -417,6 +424,18 @@ class ReGress():
 
         pt.show()
 
+
+    def open_dataset(self, row_skip):
+        data_return = lgb.FileSys().open_dataset_by_file(row_skip)
+
+        if type(data_return) != type(None):
+            # if opening new file reset self.reg_x_axis list 
+            self.reg_x_axis.clear()
+            self.dataset = data_return
+            self.df_headers = tuple(self.dataset.columns)
+
+            self.update_file_selection_result_frame(self.dataset)
+            self.init_var_selection_submenu_frame()
 
 
     def init_MMREG_tool_menu_frame(self):
@@ -568,36 +587,20 @@ class ReGress():
 
     def MMREG_result_frame(self):
         ## Multiple Linear regression result frame ##
-        self.mmreg_result_panel = ttk.PanedWindow(
-            self.result_panel, 
-            height = self.main_ui_height, 
-            width = self.tool_menu_frame_width)
-
-
-        # display the plot of the multiple linear regression
-        self.mmreg_res_plot_panel = ttk.PanedWindow(
-            self.mmreg_result_panel, orient = HORIZONTAL,
-            width = self.main_ui_width,
-            height = int(self.main_ui_height / 1.6), 
+        new_mmreg_result_multiPanels = RgM.create_multi_result_panel(
+            ttk_arg = ttk, 
+            tk_arg = tk, 
+            orientation_arg = HORIZONTAL,
+            parent_root_frame = self.result_panel, 
+            height_arg = self.main_ui_height, 
+            width_arg = self.tool_menu_frame_width,
+            text_fill = BOTH
             )
 
-        self.mmreg_result_panel.add(self.mmreg_res_plot_panel)
-
-
-        # display the statistical result of the regression
-        self.mmreg_res_text_panel = ttk.PanedWindow(
-            self.mmreg_result_panel, orient = HORIZONTAL, 
-            height = 60, 
-            width = self.main_ui_width)
-
-
-        self.mmreg_result_panel.add(self.mmreg_res_text_panel)
-        self.MMREG_stat_res_text_space = tk.Text(
-            self.mmreg_res_text_panel, 
-            background = self.secondary_accent_color, 
-            foreground = self.font_color_white)
-
-        self.MMREG_stat_res_text_space.pack(fill = BOTH)
+        self.mmreg_result_panel = new_mmreg_result_multiPanels["parent_panel"]
+        self.mmreg_res_plot_panel = new_mmreg_result_multiPanels["plotting_panel"]
+        self.mmreg_res_text_panel = new_mmreg_result_multiPanels["text_output_panel"]
+        self.MMREG_stat_res_text_space = new_mmreg_result_multiPanels["text_output_display"]
         
 
 
@@ -709,18 +712,63 @@ class ReGress():
             self.create_new_label(self.reg_y_axis, axis)
 
 
+    def init_correlation_matrix_tool_menu_frame(self):
+        corl_matrix_frame_label = ttk.Label(text="Correlation Matix")
+        self.corl_matrix_menu_submenu_frame = ttk.Labelframe(
+            self.tool_submenu_config_panel,
+            labelwidget = corl_matrix_frame_label,
+            padding = 1,
+            height = self.main_ui_height,
+            width = self.tool_menu_frame_width,
+            style = 'tool_lframe.TLabelframe'
+            )
 
-    def open_dataset(self, row_skip):
-        data_return = lgb.FileSys().open_dataset_by_file(row_skip)
 
-        if type(data_return) != type(None):
-            # if opening new file reset self.reg_x_axis list 
-            self.reg_x_axis.clear()
-            self.dataset = data_return
-            self.df_headers = tuple(self.dataset.columns)
+        refresh_corl_maatrix_plot = ttk.Button(
+            self.corl_matrix_menu_submenu_frame, 
+            text = "Refresh Correlation Matrix Output", 
+            command = lambda: self.update_correlation_matrix_result_frame())
+        
+        refresh_corl_maatrix_plot.pack(fill = X)
 
-            self.update_file_selection_result_frame(self.dataset)
-            self.init_var_selection_submenu_frame()
+
+    def init_correlation_matrix_result_frame(self):
+        new_corl_matrix_result_multiPanels = RgM.create_multi_result_panel(
+            ttk_arg = ttk, 
+            tk_arg = tk, 
+            orientation_arg = HORIZONTAL,
+            parent_root_frame = self.result_panel, 
+            height_arg = self.main_ui_height, 
+            width_arg = self.tool_menu_frame_width,
+            text_fill = BOTH
+            )
+
+        self.corl_matrix_result_panel = new_corl_matrix_result_multiPanels["parent_panel"]
+        self.corl_matrix_plotting_panel = new_corl_matrix_result_multiPanels["plotting_panel"]
+        self.corl_text_output_disp_widget = new_corl_matrix_result_multiPanels["text_output_display"]
+
+
+
+    def update_correlation_matrix_result_frame(self):
+        for widget in self.corl_matrix_plotting_panel.winfo_children():
+            widget.destroy()
+
+        plt.style.use("dark_background")
+        fig = Figure(figsize=(5, 4), dpi=100)
+        ax1 = fig.subplots()
+
+        corrMatrix = self.dataset[self.reg_x_axis].corr()
+        sns.heatmap(corrMatrix, annot=True, ax = ax1)
+
+        # add the plot and the tool control of matplotlib to the mmreg_res_plot_panel
+        canvas = FigureCanvasTkAgg(fig, master = self.corl_matrix_plotting_panel) 
+        canvas.draw()
+        canvas.get_tk_widget().pack(side = TOP, fill = BOTH, expand=1)
+
+        toolbar = NavigationToolbar2Tk(canvas, self.corl_matrix_plotting_panel)
+        toolbar.update()
+        canvas.get_tk_widget().pack(side = TOP, fill = BOTH, expand=1)
+
 
 
     def update_side_menu_view(self, btn_click_arg):
@@ -740,27 +788,38 @@ class ReGress():
                 self.tool_menu_varselect_panel.remove(self.df_editing_tool_menu_farame)
                 self.result_panel.remove(self.df_table_result_frame)
                 
-
-             
             if frame == "mmreg_frame" and self.mpannel_vsblty_state[frame] == True and btn_click_arg != "mmreg_frame":
                 self.mpannel_vsblty_state["mmreg_frame"] = False
                 self.tool_menu_varselect_panel.remove(self.variable_selection_frame)
                 self.tool_submenu_config_panel.remove(self.mmreg_tool_menu_submenu_frame)
                 self.result_panel.remove(self.mmreg_result_panel)
 
+            if frame == "corl_matrix_btn" and self.mpannel_vsblty_state[frame] == True and btn_click_arg != "corl_matrix_btn":
+                self.mpannel_vsblty_state["corl_matrix_btn"] = False
+                self.tool_menu_varselect_panel.remove(self.variable_selection_frame)
+                self.tool_submenu_config_panel.remove(self.corl_matrix_menu_submenu_frame)
+                self.result_panel.remove(self.corl_matrix_result_panel)
         
+
         # handle if frame is shown already, if not. Show
         if btn_click_arg == "df_editor_frame" and self.mpannel_vsblty_state["df_editor_frame"] == False:
-                self.mpannel_vsblty_state["df_editor_frame"] = True 
-                self.tool_menu_varselect_panel.add(self.df_editing_tool_menu_farame)
-                self.result_panel.add(self.df_table_result_frame)
+            self.mpannel_vsblty_state["df_editor_frame"] = True 
+            self.tool_menu_varselect_panel.add(self.df_editing_tool_menu_farame)
+            self.result_panel.add(self.df_table_result_frame)
 
         elif btn_click_arg == "mmreg_frame" and self.mpannel_vsblty_state["mmreg_frame"] == False:
-                self.mpannel_vsblty_state["mmreg_frame"] = True
-                self.tool_menu_varselect_panel.add(self.variable_selection_frame)
-                self.tool_submenu_config_panel.add(self.mmreg_tool_menu_submenu_frame)
-                self.result_panel.add(self.mmreg_result_panel)
-                
+            self.mpannel_vsblty_state["mmreg_frame"] = True
+            self.tool_menu_varselect_panel.add(self.variable_selection_frame)
+            self.tool_submenu_config_panel.add(self.mmreg_tool_menu_submenu_frame)
+            self.result_panel.add(self.mmreg_result_panel)
+
+        elif btn_click_arg == "corl_matrix_btn" and self.mpannel_vsblty_state["corl_matrix_btn"] == False:
+            self.mpannel_vsblty_state["corl_matrix_btn"] = True
+            self.tool_menu_varselect_panel.add(self.variable_selection_frame)
+            self.tool_submenu_config_panel.add(self.corl_matrix_menu_submenu_frame)
+            self.result_panel.add(self.corl_matrix_result_panel)
+            
+               
 
  
 def main():
