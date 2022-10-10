@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import matplotlib as mpl
 
 from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LinearRegression
+from sklearn.linear_model import LinearRegression, LogisticRegression
 from sklearn import linear_model
 
 import statsmodels.api as sm
@@ -18,7 +18,7 @@ from pyprocessmacro import Process
 
 
 
-class REG_PROC():
+class MMREG_PROC():
     def __init__(self, df_arg, df_headers, x_vars, y_var):
         self.df = df_arg
         self.y_sample = self.df[y_var]
@@ -60,7 +60,6 @@ class REG_PROC():
 
         return result_df
 
-
     def get_mmreg_stat_result(self):
         _x = sm.add_constant(self.x_sample)
         model = sm.OLS(self.y_sample, _x).fit()
@@ -68,11 +67,24 @@ class REG_PROC():
         reg_ressult = model.summary()
         
         return reg_ressult
-
-    def debug_print(self):
-        print("Selected X = ", self.x_sample, " \n ", "Selected Y = ", self.y_sample)
+    
 
 
+
+class LOGISTIC_REG():
+    def __init__(self, df_arg, df_headers_arg, x_vars, y_var):
+        self.df = df_arg
+        self.df_headers = df_headers_arg
+        self.X = df_headers[list(x_vars)]
+        self.y = df_headers[y_var]
+
+    def get_logistic_regression_result():
+        # cretae instance of logistic regressin
+        self.logistic_reg_model = LogisticRegression(solver='liblinear', random_state=0).fit(self.X, self.y)
+        self.logistic_reg_model.intercept_
+        self.logistic_reg_model.coef_
+        self.logistic_reg_model.predict_proba(self.X)
+        self.model.predict(self.X)
 
 
 

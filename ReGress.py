@@ -43,7 +43,8 @@ class ReGress():
         self.mpannel_vsblty_state = {
             "df_editor_frame" : False,
             "mmreg_frame" : False,
-            "corl_matrix_btn" : False
+            "corl_matrix_frame" : False,
+            "logistic_reg_frame" : False
             }
         
         # MMREG VARIABLES ##
@@ -172,6 +173,8 @@ class ReGress():
         self.init_correlation_matrix_tool_menu_frame()
         self.init_correlation_matrix_result_frame()
 
+        self.init_logistic_reg_tool_menu_frame()
+        self.init_logistic_reg_result_frame()
 
 
         # run startup dataframe viewer on start as inital viewport
@@ -217,14 +220,14 @@ class ReGress():
             head_nav_frame, 
             text = "CMATRIX", 
             style = "nav_tool.TButton",
-            command = lambda: self.update_side_menu_view("corl_matrix_btn"))
+            command = lambda: self.update_side_menu_view("corl_matrix_frame"))
         
         # create a button in top navigation panel for mediator regression
         med_reg_tab_btn = ttk.Button(
             head_nav_frame, 
-            text = "MEDREG", 
+            text = "LOGIREG", 
             style = "nav_tool.TButton",
-            command = lambda: self.update_side_menu_view("med_reg_btn"))
+            command = lambda: self.update_side_menu_view("logistic_reg_frame"))
 
         btn_padx = 0.1
 
@@ -626,7 +629,7 @@ class ReGress():
 
 
         # initialize REGPROC Class
-        REG_CLASS = lgb.REG_PROC(
+        REG_CLASS = lgb.MMREG_PROC(
             df_arg = self.dataset, 
             df_headers = self.df_headers, 
             x_vars = self.reg_x_axis, 
@@ -753,6 +756,7 @@ class ReGress():
         for widget in self.corl_matrix_plotting_panel.winfo_children():
             widget.destroy()
 
+
         plt.style.use("dark_background")
         fig = Figure(figsize=(5, 4), dpi=100)
         ax1 = fig.subplots()
@@ -769,6 +773,68 @@ class ReGress():
         toolbar.update()
         canvas.get_tk_widget().pack(side = TOP, fill = BOTH, expand=1)
 
+        
+
+    def init_logistic_reg_tool_menu_frame(self):
+        logistic_reg_frame_label = ttk.Label(text="Logistic Regression")
+        self.logistic_reg_menu_submenu_frame = ttk.Labelframe(
+            self.tool_submenu_config_panel,
+            labelwidget = logistic_reg_frame_label,
+            padding = 1,
+            height = self.main_ui_height,
+            width = self.tool_menu_frame_width,
+            style = 'tool_lframe.TLabelframe'
+            )
+
+        refresh_logistic_reg_plot = ttk.Button(
+            self.logistic_reg_menu_submenu_frame, 
+            text = "Refresh Logistic Regression Output", 
+            command = lambda: self.update_logistic_reg_result_frame())
+        
+        refresh_logistic_reg_plot.pack(fill = X)
+    
+
+    def init_logistic_reg_result_frame(self):
+        new_logistic_reg_result_multiPanels = RgM.create_multi_result_panel(
+            ttk_arg = ttk, 
+            tk_arg = tk, 
+            orientation_arg = HORIZONTAL,
+            parent_root_frame = self.result_panel, 
+            height_arg = self.main_ui_height, 
+            width_arg = self.tool_menu_frame_width,
+            text_fill = BOTH
+            )
+
+        self.logistic_reg_result_panel = new_logistic_reg_result_multiPanels["parent_panel"]
+        self.logistic_reg_plotting_panel = new_logistic_reg_result_multiPanels["plotting_panel"]
+        self.logistic_reg_output_disp_widget = new_logistic_reg_result_multiPanels["text_output_display"]
+    
+
+    def update_logistic_reg_result_frame(self):
+        for widget in self.logistic_reg_plotting_panel.winfo_children():
+            widget.destroy()
+
+
+        plt.style.use("dark_background")
+        fig = Figure(figsize=(5, 4), dpi=100)
+        ax1 = fig.subplots()
+
+        sns.regplot(
+            x = self.dataset[self.reg_x_axis], 
+            y = self.dataset[self.reg_y_axis], 
+            data = self.dataset, 
+            logistic = True, 
+            ci = None, 
+            ax = ax1)
+
+        # add the plot and the tool control of matplotlib to the mmreg_res_plot_panel
+        canvas = FigureCanvasTkAgg(fig, master = self.logistic_reg_plotting_panel) 
+        canvas.draw()
+        canvas.get_tk_widget().pack(side = TOP, fill = BOTH, expand=1)
+
+        toolbar = NavigationToolbar2Tk(canvas, self.logistic_reg_plotting_panel)
+        toolbar.update()
+        canvas.get_tk_widget().pack(side = TOP, fill = BOTH, expand=1)
 
 
     def update_side_menu_view(self, btn_click_arg):
@@ -794,11 +860,19 @@ class ReGress():
                 self.tool_submenu_config_panel.remove(self.mmreg_tool_menu_submenu_frame)
                 self.result_panel.remove(self.mmreg_result_panel)
 
-            if frame == "corl_matrix_btn" and self.mpannel_vsblty_state[frame] == True and btn_click_arg != "corl_matrix_btn":
-                self.mpannel_vsblty_state["corl_matrix_btn"] = False
+            if frame == "corl_matrix_frame" and self.mpannel_vsblty_state[frame] == True and btn_click_arg != "corl_matrix_frame":
+                self.mpannel_vsblty_state["corl_matrix_frame"] = False
                 self.tool_menu_varselect_panel.remove(self.variable_selection_frame)
                 self.tool_submenu_config_panel.remove(self.corl_matrix_menu_submenu_frame)
                 self.result_panel.remove(self.corl_matrix_result_panel)
+            
+            if frame == "logistic_reg_frame" and self.mpannel_vsblty_state[frame] == True and btn_click_arg != "logistic_reg_frame":
+                self.mpannel_vsblty_state["logistic_reg_frame"] = False
+                self.tool_menu_varselect_panel.remove(self.variable_selection_frame)
+                self.tool_submenu_config_panel.remove(self.logistic_reg_menu_submenu_frame)
+                self.result_panel.remove(self.logistic_reg_result_panel)
+
+
         
 
         # handle if frame is shown already, if not. Show
@@ -813,13 +887,19 @@ class ReGress():
             self.tool_submenu_config_panel.add(self.mmreg_tool_menu_submenu_frame)
             self.result_panel.add(self.mmreg_result_panel)
 
-        elif btn_click_arg == "corl_matrix_btn" and self.mpannel_vsblty_state["corl_matrix_btn"] == False:
-            self.mpannel_vsblty_state["corl_matrix_btn"] = True
+        elif btn_click_arg == "corl_matrix_frame" and self.mpannel_vsblty_state["corl_matrix_frame"] == False:
+            self.mpannel_vsblty_state["corl_matrix_frame"] = True
             self.tool_menu_varselect_panel.add(self.variable_selection_frame)
             self.tool_submenu_config_panel.add(self.corl_matrix_menu_submenu_frame)
             self.result_panel.add(self.corl_matrix_result_panel)
+
+        elif btn_click_arg == "logistic_reg_frame" and self.mpannel_vsblty_state["logistic_reg_frame"] == False:
+            self.mpannel_vsblty_state["logistic_reg_frame"] = True
+            self.tool_menu_varselect_panel.add(self.variable_selection_frame)
+            self.tool_submenu_config_panel.add(self.logistic_reg_menu_submenu_frame)
+            self.result_panel.add(self.logistic_reg_result_panel)
+
             
-               
 
  
 def main():
