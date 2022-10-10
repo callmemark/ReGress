@@ -12,6 +12,8 @@ import ReGress_methods as RgM
 import tkinter as tk
 from tkinter import LEFT, VERTICAL, LabelFrame, ttk
 from tkinter import X, TOP, LEFT, RIGHT, BOTTOM, W, HORIZONTAL, VERTICAL, BOTH, FLAT, BOTTOM
+from tkinter.filedialog import asksaveasfile
+
 
 import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
@@ -432,10 +434,16 @@ class ReGress():
                     )
                 )
         )
-
+        #self.pt.model.df
+        refresh_data_frame_btn = ttk.Button(
+            self.df_editing_tool_menu_frame,
+            text = "Refresh Changes",
+            command = lambda: self.update_variable_selection_frame()
+            )
 
         max_abs_normalize_menu_frame.pack(fill = X)
         apply_normalize_btn.pack(side = RIGHT, fill = X, padx = 2)
+        refresh_data_frame_btn.pack(side = BOTTOM, fill = X, padx = 2)
       
 
 
@@ -448,16 +456,30 @@ class ReGress():
             width = self.tool_menu_frame_width)
 
 
-    # deprecate update_file_selection_result_frame
+    def update_variable_selection_frame(self):
+        update_df = self.pt.model.df
+        
+        self.df_headers = tuple(update_df.columns)
+        self.dataset = update_df
+
+        self.tool_menu_varselect_panel.remove(self.variable_selection_frame)
+        self.init_var_selection_submenu_frame()
+        self.tool_menu_varselect_panel.add(self.variable_selection_frame)
+
+        
+
+
     def update_dataframe_editor_result_frame(self, df):
         # ouput the tabulated display of the dataframe
         self.dataset = df
-        self.df_table = pt = Table(self.df_table_result_frame, dataframe=df, showtoolbar=True, showstatusbar=True)
-        pt.show()
-        options = {'colheadercolor':'green','floatprecision': 5}
-        config.apply_options(options, pt)
+        
+        self.pt = Table(self.df_table_result_frame, dataframe=df, showtoolbar=False, showstatusbar=True)
+        
+        options = {'colheadercolor':'black','floatprecision': 5}
+        config.apply_options(options, self.pt)
+        
+        self.pt.show()
 
-        pt.show()
 
 
     def open_dataset(self, row_skip):
