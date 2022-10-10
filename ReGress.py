@@ -1,7 +1,8 @@
-from asyncio.windows_events import NULL
-from doctest import master
-from re import T
-from turtle import width
+#from asyncio.windows_events import NULL
+#from doctest import master
+#from re import T
+#from turtle import width
+
 import pandas as pd
 from pandastable import Table, config
 
@@ -15,10 +16,12 @@ from tkinter import X, TOP, LEFT, RIGHT, BOTTOM, W, HORIZONTAL, VERTICAL, BOTH, 
 import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, NavigationToolbar2Tk)
+from tkinter.messagebox import showinfo
 
-import numpy as np
+#import numpy as np
 import seaborn as sns
 from ttkthemes import ThemedTk
+
 
 from idlelib.tooltip import Hovertip
 
@@ -399,8 +402,6 @@ class ReGress():
     def dataframe_editor_tool_menu_frame(self):
         # This method handles UI for Dataframe manipulation
         # create a button in top navigation panel to select dataset file
-
-        
 
         self.df_editing_tool_menu_frame = ttk.Frame(
             self.tool_submenu_config_panel, 
@@ -867,62 +868,68 @@ class ReGress():
         # This funtion handles what to hide and shown  in side menu frame
         # This function is called by nav button in head selection panel
         # btn_click_arg is a string to determine what frame shoud be shown
+        if type(self.dataset) == type(None):
+            showinfo(
+                title ='Error',
+                message = "Choose a dataset first"
+                )
 
-        # get the keys of the frame state
-        frames_key = self.mpannel_vsblty_state.keys()
+        elif type(self.dataset) != type(None):
+            # get the keys of the frame state
+            frames_key = self.mpannel_vsblty_state.keys()
 
-        # loop through the dictionary for open frame and hide it
-        # remove all frame / widgets related to the frame that is not visible
-        for frame in frames_key:
-            if frame == "df_editor_frame" and self.mpannel_vsblty_state[frame] == True and btn_click_arg != "df_editor_frame":
-                self.mpannel_vsblty_state["df_editor_frame"] = False
-                self.tool_menu_varselect_panel.remove(self.variable_selection_frame)
-                self.tool_submenu_config_panel.remove(self.df_editing_tool_menu_frame)
-                self.result_panel.remove(self.df_table_result_frame)
+            # loop through the dictionary for open frame and hide it
+            # remove all frame / widgets related to the frame that is not visible
+            for frame in frames_key:
+                if frame == "df_editor_frame" and self.mpannel_vsblty_state[frame] == True and btn_click_arg != "df_editor_frame":
+                    self.mpannel_vsblty_state["df_editor_frame"] = False
+                    self.tool_menu_varselect_panel.remove(self.variable_selection_frame)
+                    self.tool_submenu_config_panel.remove(self.df_editing_tool_menu_frame)
+                    self.result_panel.remove(self.df_table_result_frame)
                 
-            if frame == "mmreg_frame" and self.mpannel_vsblty_state[frame] == True and btn_click_arg != "mmreg_frame":
-                self.mpannel_vsblty_state["mmreg_frame"] = False
-                self.tool_menu_varselect_panel.remove(self.variable_selection_frame)
-                self.tool_submenu_config_panel.remove(self.mmreg_tool_menu_submenu_frame)
-                self.result_panel.remove(self.mmreg_result_panel)
+                if frame == "mmreg_frame" and self.mpannel_vsblty_state[frame] == True and btn_click_arg != "mmreg_frame":
+                    self.mpannel_vsblty_state["mmreg_frame"] = False
+                    self.tool_menu_varselect_panel.remove(self.variable_selection_frame)
+                    self.tool_submenu_config_panel.remove(self.mmreg_tool_menu_submenu_frame)
+                    self.result_panel.remove(self.mmreg_result_panel)
 
-            if frame == "corl_matrix_frame" and self.mpannel_vsblty_state[frame] == True and btn_click_arg != "corl_matrix_frame":
-                self.mpannel_vsblty_state["corl_matrix_frame"] = False
-                self.tool_menu_varselect_panel.remove(self.variable_selection_frame)
-                self.tool_submenu_config_panel.remove(self.corl_matrix_menu_submenu_frame)
-                self.result_panel.remove(self.corl_matrix_result_panel)
+                if frame == "corl_matrix_frame" and self.mpannel_vsblty_state[frame] == True and btn_click_arg != "corl_matrix_frame":
+                    self.mpannel_vsblty_state["corl_matrix_frame"] = False
+                    self.tool_menu_varselect_panel.remove(self.variable_selection_frame)
+                    self.tool_submenu_config_panel.remove(self.corl_matrix_menu_submenu_frame)
+                    self.result_panel.remove(self.corl_matrix_result_panel)
             
-            if frame == "logistic_reg_frame" and self.mpannel_vsblty_state[frame] == True and btn_click_arg != "logistic_reg_frame":
-                self.mpannel_vsblty_state["logistic_reg_frame"] = False
-                self.tool_menu_varselect_panel.remove(self.variable_selection_frame)
-                self.tool_submenu_config_panel.remove(self.logistic_reg_menu_submenu_frame)
-                self.result_panel.remove(self.logistic_reg_result_panel)
+                if frame == "logistic_reg_frame" and self.mpannel_vsblty_state[frame] == True and btn_click_arg != "logistic_reg_frame":
+                    self.mpannel_vsblty_state["logistic_reg_frame"] = False
+                    self.tool_menu_varselect_panel.remove(self.variable_selection_frame)
+                    self.tool_submenu_config_panel.remove(self.logistic_reg_menu_submenu_frame)
+                    self.result_panel.remove(self.logistic_reg_result_panel)
 
 
-        # handle if frame is shown already, if not. Show
-        if btn_click_arg == "df_editor_frame" and self.mpannel_vsblty_state["df_editor_frame"] == False:
-            self.mpannel_vsblty_state["df_editor_frame"] = True 
-            self.tool_menu_varselect_panel.add(self.variable_selection_frame)
-            self.tool_submenu_config_panel.add(self.df_editing_tool_menu_frame)
-            self.result_panel.add(self.df_table_result_frame)
+            # handle if frame is shown already, if not. Show
+            if btn_click_arg == "df_editor_frame" and self.mpannel_vsblty_state["df_editor_frame"] == False:
+                self.mpannel_vsblty_state["df_editor_frame"] = True 
+                self.tool_menu_varselect_panel.add(self.variable_selection_frame)
+                self.tool_submenu_config_panel.add(self.df_editing_tool_menu_frame)
+                self.result_panel.add(self.df_table_result_frame)
 
-        elif btn_click_arg == "mmreg_frame" and self.mpannel_vsblty_state["mmreg_frame"] == False:
-            self.mpannel_vsblty_state["mmreg_frame"] = True
-            self.tool_menu_varselect_panel.add(self.variable_selection_frame)
-            self.tool_submenu_config_panel.add(self.mmreg_tool_menu_submenu_frame)
-            self.result_panel.add(self.mmreg_result_panel)
+            elif btn_click_arg == "mmreg_frame" and self.mpannel_vsblty_state["mmreg_frame"] == False:
+                self.mpannel_vsblty_state["mmreg_frame"] = True
+                self.tool_menu_varselect_panel.add(self.variable_selection_frame)
+                self.tool_submenu_config_panel.add(self.mmreg_tool_menu_submenu_frame)
+                self.result_panel.add(self.mmreg_result_panel)
 
-        elif btn_click_arg == "corl_matrix_frame" and self.mpannel_vsblty_state["corl_matrix_frame"] == False:
-            self.mpannel_vsblty_state["corl_matrix_frame"] = True
-            self.tool_menu_varselect_panel.add(self.variable_selection_frame)
-            self.tool_submenu_config_panel.add(self.corl_matrix_menu_submenu_frame)
-            self.result_panel.add(self.corl_matrix_result_panel)
+            elif btn_click_arg == "corl_matrix_frame" and self.mpannel_vsblty_state["corl_matrix_frame"] == False:
+                self.mpannel_vsblty_state["corl_matrix_frame"] = True
+                self.tool_menu_varselect_panel.add(self.variable_selection_frame)
+                self.tool_submenu_config_panel.add(self.corl_matrix_menu_submenu_frame)
+                self.result_panel.add(self.corl_matrix_result_panel)
 
-        elif btn_click_arg == "logistic_reg_frame" and self.mpannel_vsblty_state["logistic_reg_frame"] == False:
-            self.mpannel_vsblty_state["logistic_reg_frame"] = True
-            self.tool_menu_varselect_panel.add(self.variable_selection_frame)
-            self.tool_submenu_config_panel.add(self.logistic_reg_menu_submenu_frame)
-            self.result_panel.add(self.logistic_reg_result_panel)
+            elif btn_click_arg == "logistic_reg_frame" and self.mpannel_vsblty_state["logistic_reg_frame"] == False:
+                self.mpannel_vsblty_state["logistic_reg_frame"] = True
+                self.tool_menu_varselect_panel.add(self.variable_selection_frame)
+                self.tool_submenu_config_panel.add(self.logistic_reg_menu_submenu_frame)
+                self.result_panel.add(self.logistic_reg_result_panel)
 
             
 def main():
