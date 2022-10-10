@@ -71,3 +71,39 @@ def create_multi_result_panel(ttk_arg, tk_arg, orientation_arg, parent_root_fram
     return frames
 
 
+
+def create_basic_label_menu_options(tk_arg, ttk_arg, style_arg, frame_parent_arg, label_txt_label, btn_text_label, menu_value_arg):
+    root_frame = ttk_arg.Frame(
+        frame_parent_arg,
+        style = style_arg
+        )
+
+    menu_section_label = ttk_arg.Label(
+        root_frame,
+        text = label_txt_label
+    )
+
+    menu_strvar = tk_arg.StringVar()
+    new_menubtn = create_menu_btn(
+        tk_arg = tk_arg, 
+        ttk_arg = ttk_arg,
+        frame_parent_arg = root_frame, 
+        text_arg = btn_text_label,
+        stringvar_arg = menu_strvar, 
+        menu_value_arg = menu_value_arg
+        )
+
+    menubtn = new_menubtn["MenuButton"]
+    menubtn["menu"] = new_menubtn["RadioButton"]
+
+    menu_section_label.pack(side = "top", fill = "x", pady = 2, padx = 2)
+    menubtn.pack(side = "left", fill = "x", pady = 2, padx = 2)
+    
+
+    frames = {
+        "root_frame" : root_frame,
+        "str_var" : menu_strvar
+        }
+
+    return frames
+

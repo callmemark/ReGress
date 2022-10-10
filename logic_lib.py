@@ -131,3 +131,43 @@ class FileSys():
                 )
 
                 return None
+
+
+
+class NormalizationMethods():
+    def __init__(self):
+        pass
+
+    def max_abs_scaling(self, df, column_name_arg):
+        df = df.copy()
+        for column in column_name_arg:
+            df[column] = df[column] / df[column].abs().max()
+
+        return df
+
+    def min_max_scaling(self, df, column_name_arg):
+        df = df.copy()
+
+        for column in column_name_arg:
+            df[column] = (df[column] - df[column].min()) / (df[column].max() - df[column].min()) 
+
+        return df
+    
+    def z_score_scaling(self, df, column_name_arg):
+        df = df.copy()
+
+        for column in column_name_arg:  
+            df[column] = (df[column] - df[column].mean()) / df[column].std()    
+
+        return df
+
+
+def get_normalized_df(method_arg, df_arg, column_applied_arg):
+    init_NM = NormalizationMethods()
+
+    if method_arg == "max abs scaling":
+        return init_NM.max_abs_scaling(df_arg, column_applied_arg)
+    elif method_arg == "min max scaling":
+        return init_NM.min_max_scaling(df_arg, column_applied_arg)
+    elif method_arg == "z-score scaling":
+        return init_NM.z_score_scaling(df_arg, column_applied_arg)

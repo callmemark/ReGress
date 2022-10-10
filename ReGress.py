@@ -20,6 +20,7 @@ import numpy as np
 import seaborn as sns
 from ttkthemes import ThemedTk
 
+from idlelib.tooltip import Hovertip
 
 
 class ReGress():
@@ -35,6 +36,7 @@ class ReGress():
 
         # dataset variables
         self.dataset = None
+        self.dataset_baackup_copy = None
         self.df_headers = []
 
 
@@ -164,8 +166,8 @@ class ReGress():
         self.init_tool_menu_panel()
 
 
-        self.file_selection_tool_menu_frame()
-        self.file_selection_result_frame()
+        self.dataframe_editor_tool_menu_frame()
+        self.dataframe_editor_result_frame()
 
         self.MMREG_result_frame()
         self.init_MMREG_tool_menu_frame()
@@ -177,9 +179,6 @@ class ReGress():
         self.init_logistic_reg_result_frame()
 
 
-        # run startup dataframe viewer on start as inital viewport
-        #self.tool_menu_varselect_panel.add(self.df_editing_tool_menu_farame)
-        #self.result_panel.add(self.df_table_result_frame)
         
 
     def init_tool_nav_frame(self):
@@ -207,6 +206,7 @@ class ReGress():
             text = "DATAFRAME", 
             style = "nav_tool.TButton",
             command = lambda: self.update_side_menu_view("df_editor_frame"))
+        Hovertip(file_manage_tab_btn,'Dataframe editor tab', hover_delay=500)
         
         # create a button in top navigation panel for multitple linear regression options
         mmreg_tab_btn = ttk.Button(
@@ -214,6 +214,7 @@ class ReGress():
             text = "MMLINREG", 
             style = "nav_tool.TButton",
             command = lambda: self.update_side_menu_view("mmreg_frame"))
+        Hovertip(mmreg_tab_btn,'(Multiple) Linear Regression Analysis tab', hover_delay=500)
         
         # create a button in top navigation panel for creating a matrix relationship options
         matrix_tab_btn = ttk.Button(
@@ -221,6 +222,7 @@ class ReGress():
             text = "CMATRIX", 
             style = "nav_tool.TButton",
             command = lambda: self.update_side_menu_view("corl_matrix_frame"))
+        Hovertip(matrix_tab_btn,'Correlational Matrix Analysis tab', hover_delay=500)
         
         # create a button in top navigation panel for mediator regression
         med_reg_tab_btn = ttk.Button(
@@ -228,6 +230,7 @@ class ReGress():
             text = "LOGIREG", 
             style = "nav_tool.TButton",
             command = lambda: self.update_side_menu_view("logistic_reg_frame"))
+        Hovertip(med_reg_tab_btn,'Logisitc Regression Analysis tab', hover_delay=500)
 
         btn_padx = 0.1
 
@@ -391,25 +394,52 @@ class ReGress():
         self.mact_panel.add(self.result_panel)
 
 
-    def init_plot_result_panel(self):
-        pass
 
-
-
-    def file_selection_tool_menu_frame(self):
+    # deprecate file_selection_tool_menu_frame
+    def dataframe_editor_tool_menu_frame(self):
         # This method handles UI for Dataframe manipulation
         # create a button in top navigation panel to select dataset file
-        self.df_editing_tool_menu_farame = ttk.Frame(
-            self.tool_menu_varselect_panel, 
+
+        
+
+        self.df_editing_tool_menu_frame = ttk.Frame(
+            self.tool_submenu_config_panel, 
             height = self.main_ui_height, 
             width = self.tool_menu_frame_width)
-        
-        stmf_title = ttk.Label(self.df_editing_tool_menu_farame, text = "File Selection Tool")
-        stmf_title.grid(row = 0, column = 0,  sticky = W, pady = 25)
 
 
+        new_max_abs_normalize_menu = RgM.create_basic_label_menu_options(
+            tk_arg = tk, 
+            ttk_arg = ttk, 
+            style_arg = 'tool_lframe.TFrame', 
+            frame_parent_arg = self.df_editing_tool_menu_frame, 
+            label_txt_label = "Normalization Methods", 
+            btn_text_label = "Not Normalized", 
+            menu_value_arg = ["max abs scaling", "min max scaling", "z-score scaling"]
+            )
+        max_abs_normalize_menu_frame = new_max_abs_normalize_menu["root_frame"]
+        max_abs_normalize_strvar = new_max_abs_normalize_menu["str_var"]
 
-    def file_selection_result_frame(self):
+        apply_normalize_btn = ttk.Button(
+            max_abs_normalize_menu_frame, 
+            text = "Apply Normalize",
+            command = lambda: self.update_dataframe_editor_result_frame(
+                lgb.get_normalized_df(
+                    max_abs_normalize_strvar.get(),
+                    self.dataset_baackup_copy,
+                    self.reg_x_axis,
+                    )
+                )
+        )
+
+
+        max_abs_normalize_menu_frame.pack(fill = X)
+        apply_normalize_btn.pack(side = RIGHT, fill = X, padx = 2)
+      
+
+
+    # deprecate file_selection_result_frame
+    def dataframe_editor_result_frame(self):
         # crete the Result viewport fot the data frame table
         self.df_table_result_frame = ttk.Frame(
             self.result_panel, 
@@ -417,9 +447,10 @@ class ReGress():
             width = self.tool_menu_frame_width)
 
 
-
-    def update_file_selection_result_frame(self, df):
+    # deprecate update_file_selection_result_frame
+    def update_dataframe_editor_result_frame(self, df):
         # ouput the tabulated display of the dataframe
+        self.dataset = df
         self.df_table = pt = Table(self.df_table_result_frame, dataframe=df, showtoolbar=True, showstatusbar=True)
         pt.show()
         options = {'colheadercolor':'green','floatprecision': 5}
@@ -435,9 +466,11 @@ class ReGress():
             # if opening new file reset self.reg_x_axis list 
             self.reg_x_axis.clear()
             self.dataset = data_return
+            self.dataset_baackup_copy = data_return
             self.df_headers = tuple(self.dataset.columns)
 
-            self.update_file_selection_result_frame(self.dataset)
+
+            self.update_dataframe_editor_result_frame(self.dataset)
             self.init_var_selection_submenu_frame()
 
 
@@ -452,7 +485,6 @@ class ReGress():
             width = self.tool_menu_frame_width,
             style = 'tool_lframe.TLabelframe'
             )
-
 
         # fit intercept parameter UI frame
         # create menu button for selecting MMREG fit intercetp parameter
@@ -479,8 +511,6 @@ class ReGress():
         fit_intcept_param_label_menutbn = new_fit_intcept_menubtn["MenuButton"]
         fit_intcept_param_label_menutbn["menu"] = new_fit_intcept_menubtn["RadioButton"]
 
-
-
         # positive parameter UI frame
         # create menu button for selecting MMREG normalize parameter
         positive_coef_mmreg_param_frame = ttk.Frame(
@@ -502,9 +532,9 @@ class ReGress():
             menu_value_arg = ["True", "False"]
             )
 
+
         positive_coef_mmreg_param_menubtn = new_positive_coef_mmreg_param_menubtn["MenuButton"]
         positive_coef_mmreg_param_menubtn["menu"] = new_positive_coef_mmreg_param_menubtn["RadioButton"]
-
 
 
         # positive parameter UI frame
@@ -520,8 +550,6 @@ class ReGress():
 
         njob_param_inp_strvar = tk.StringVar()
         njob_param_entry = ttk.Entry(njob_mmreg_param_frame, textvariable = njob_param_inp_strvar)
-
-
 
 
         # positive parameter UI frame
@@ -547,8 +575,6 @@ class ReGress():
 
         stat_output_mmreg_param_menubtn = new_stat_output_mmreg_param_menubtn["MenuButton"]
         stat_output_mmreg_param_menubtn["menu"] = new_stat_output_mmreg_param_menubtn["RadioButton"]
-
-
 
 
         # Button that update the Multiple linear regression plot and stat result
@@ -845,13 +871,13 @@ class ReGress():
         # get the keys of the frame state
         frames_key = self.mpannel_vsblty_state.keys()
 
-
         # loop through the dictionary for open frame and hide it
         # remove all frame / widgets related to the frame that is not visible
         for frame in frames_key:
             if frame == "df_editor_frame" and self.mpannel_vsblty_state[frame] == True and btn_click_arg != "df_editor_frame":
                 self.mpannel_vsblty_state["df_editor_frame"] = False
-                self.tool_menu_varselect_panel.remove(self.df_editing_tool_menu_farame)
+                self.tool_menu_varselect_panel.remove(self.variable_selection_frame)
+                self.tool_submenu_config_panel.remove(self.df_editing_tool_menu_frame)
                 self.result_panel.remove(self.df_table_result_frame)
                 
             if frame == "mmreg_frame" and self.mpannel_vsblty_state[frame] == True and btn_click_arg != "mmreg_frame":
@@ -873,12 +899,11 @@ class ReGress():
                 self.result_panel.remove(self.logistic_reg_result_panel)
 
 
-        
-
         # handle if frame is shown already, if not. Show
         if btn_click_arg == "df_editor_frame" and self.mpannel_vsblty_state["df_editor_frame"] == False:
             self.mpannel_vsblty_state["df_editor_frame"] = True 
-            self.tool_menu_varselect_panel.add(self.df_editing_tool_menu_farame)
+            self.tool_menu_varselect_panel.add(self.variable_selection_frame)
+            self.tool_submenu_config_panel.add(self.df_editing_tool_menu_frame)
             self.result_panel.add(self.df_table_result_frame)
 
         elif btn_click_arg == "mmreg_frame" and self.mpannel_vsblty_state["mmreg_frame"] == False:
@@ -900,8 +925,6 @@ class ReGress():
             self.result_panel.add(self.logistic_reg_result_panel)
 
             
-
- 
 def main():
     #app = tk.Tk()
     app = ThemedTk(theme="black")
