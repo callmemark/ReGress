@@ -456,9 +456,14 @@ class ReGress():
             width = self.tool_menu_frame_width)
 
 
+
     def update_variable_selection_frame(self):
+        # update the variable sectection frame
+
+
+        self.update_side_menu_view("df_editor_frame")
+
         update_df = self.pt.model.df
-        
         self.df_headers = tuple(update_df.columns)
         self.dataset = update_df
 
@@ -466,36 +471,45 @@ class ReGress():
         self.init_var_selection_submenu_frame()
         self.tool_menu_varselect_panel.add(self.variable_selection_frame)
 
+
         
-
-
     def update_dataframe_editor_result_frame(self, df):
         # ouput the tabulated display of the dataframe
         self.dataset = df
         
         self.pt = Table(self.df_table_result_frame, dataframe=df, showtoolbar=False, showstatusbar=True)
-        
         options = {'colheadercolor':'black','floatprecision': 5}
         config.apply_options(options, self.pt)
         
         self.pt.show()
-
+        
+        self.update_variable_selection_frame()
+        
 
 
     def open_dataset(self, row_skip):
         data_return = lgb.FileSys().open_dataset_by_file(row_skip)
 
         if type(data_return) != type(None):
-            # if opening new file reset self.reg_x_axis list 
+            # if opening new file reset user selected variable
             self.reg_x_axis.clear()
+
+            # set the opened dataset to a variable
             self.dataset = data_return
+
+            # create a copy of the dataset
             self.dataset_baackup_copy = data_return
+
+            # get the headers and convert to tuple then store in variable
+            # this headers will be used for selecting in variable selection menu
             self.df_headers = tuple(self.dataset.columns)
-
-
+            
+            # update the table
             self.update_dataframe_editor_result_frame(self.dataset)
-            self.init_var_selection_submenu_frame()
 
+            self.update_variable_selection_frame()
+            
+ 
 
     def init_MMREG_tool_menu_frame(self):
         # create the main frame or a root frame of the tool menu for multiple linear regresssion
@@ -886,6 +900,71 @@ class ReGress():
         canvas.get_tk_widget().pack(side = TOP, fill = BOTH, expand=1)
 
 
+
+    def open_variable_selection_panel(self, call_state_open = bool):
+        print("added open var select")
+        if call_state_open:
+            print("We are true")
+            self.tool_menu_varselect_panel.add(self.variable_selection_frame)
+        elif not call_state_open:
+            self.tool_menu_varselect_panel.remove(self.variable_selection_frame)
+            
+
+    def open_dataframe_frame(self, action_state_open = bool):
+        if action_state_open:
+            self.mpannel_vsblty_state["df_editor_frame"] = True 
+            self.result_panel.add(self.df_table_result_frame)
+            self.open_variable_selection_panel(True)
+            self.tool_submenu_config_panel.add(self.df_editing_tool_menu_frame)
+        elif not action_state_open:
+            self.mpannel_vsblty_state["df_editor_frame"] = False
+            self.open_variable_selection_panel(False)
+            self.result_panel.remove(self.df_table_result_frame)
+            self.tool_submenu_config_panel.remove(self.df_editing_tool_menu_frame)
+
+
+
+    def open_mmreg_frame(self, action_state_open = bool):
+        if action_state_open:
+            self.mpannel_vsblty_state["mmreg_frame"] = True
+            self.open_variable_selection_panel(True)
+            self.result_panel.add(self.mmreg_result_panel)
+            self.tool_submenu_config_panel.add(self.mmreg_tool_menu_submenu_frame)
+        elif not action_state_open:
+            self.mpannel_vsblty_state["mmreg_frame"] = False
+            self.open_variable_selection_panel(False)
+            self.result_panel.remove(self.mmreg_result_panel)
+            self.tool_submenu_config_panel.remove(self.mmreg_tool_menu_submenu_frame)
+
+
+    def open_corl_matrix_frame(self, action_state_open = bool):
+        if action_state_open:
+            self.mpannel_vsblty_state["corl_matrix_frame"] = True
+            self.open_variable_selection_panel(True)
+            self.result_panel.add(self.corl_matrix_result_panel)
+            self.tool_submenu_config_panel.add(self.corl_matrix_menu_submenu_frame)
+        elif not action_state_open:
+            self.mpannel_vsblty_state["corl_matrix_frame"] = False
+            self.open_variable_selection_panel(False)
+            self.result_panel.remove(self.corl_matrix_result_panel)
+            self.tool_submenu_config_panel.remove(self.corl_matrix_menu_submenu_frame)
+
+
+    def open_logistic_reg_frame(self, action_state_open = bool):
+        if action_state_open:
+            self.mpannel_vsblty_state["logistic_reg_frame"] = True
+            self.open_variable_selection_panel(True)
+            self.result_panel.add(self.logistic_reg_result_panel)
+            self.tool_submenu_config_panel.add(self.logistic_reg_menu_submenu_frame)
+        elif not action_state_open:
+            self.mpannel_vsblty_state["logistic_reg_frame"] = False
+            self.open_variable_selection_panel(False)
+            self.result_panel.remove(self.logistic_reg_result_panel)
+            self.tool_submenu_config_panel.remove(self.logistic_reg_menu_submenu_frame)
+
+    
+
+
     def update_side_menu_view(self, btn_click_arg):
         # This funtion handles what to hide and shown  in side menu frame
         # This function is called by nav button in head selection panel
@@ -904,54 +983,31 @@ class ReGress():
             # remove all frame / widgets related to the frame that is not visible
             for frame in frames_key:
                 if frame == "df_editor_frame" and self.mpannel_vsblty_state[frame] == True and btn_click_arg != "df_editor_frame":
-                    self.mpannel_vsblty_state["df_editor_frame"] = False
-                    self.tool_menu_varselect_panel.remove(self.variable_selection_frame)
-                    self.tool_submenu_config_panel.remove(self.df_editing_tool_menu_frame)
-                    self.result_panel.remove(self.df_table_result_frame)
+                    self.open_dataframe_frame(False)
                 
                 if frame == "mmreg_frame" and self.mpannel_vsblty_state[frame] == True and btn_click_arg != "mmreg_frame":
-                    self.mpannel_vsblty_state["mmreg_frame"] = False
-                    self.tool_menu_varselect_panel.remove(self.variable_selection_frame)
-                    self.tool_submenu_config_panel.remove(self.mmreg_tool_menu_submenu_frame)
-                    self.result_panel.remove(self.mmreg_result_panel)
+                    self.open_mmreg_frame(False)
 
                 if frame == "corl_matrix_frame" and self.mpannel_vsblty_state[frame] == True and btn_click_arg != "corl_matrix_frame":
-                    self.mpannel_vsblty_state["corl_matrix_frame"] = False
-                    self.tool_menu_varselect_panel.remove(self.variable_selection_frame)
-                    self.tool_submenu_config_panel.remove(self.corl_matrix_menu_submenu_frame)
-                    self.result_panel.remove(self.corl_matrix_result_panel)
+                    self.open_corl_matrix_frame(False)
             
                 if frame == "logistic_reg_frame" and self.mpannel_vsblty_state[frame] == True and btn_click_arg != "logistic_reg_frame":
-                    self.mpannel_vsblty_state["logistic_reg_frame"] = False
-                    self.tool_menu_varselect_panel.remove(self.variable_selection_frame)
-                    self.tool_submenu_config_panel.remove(self.logistic_reg_menu_submenu_frame)
-                    self.result_panel.remove(self.logistic_reg_result_panel)
+                    self.open_logistic_reg_frame(False)
 
 
-            # handle if frame is shown already, if not. Show
+            # handle if frame is shown already, if not Show
             if btn_click_arg == "df_editor_frame" and self.mpannel_vsblty_state["df_editor_frame"] == False:
-                self.mpannel_vsblty_state["df_editor_frame"] = True 
-                self.tool_menu_varselect_panel.add(self.variable_selection_frame)
-                self.tool_submenu_config_panel.add(self.df_editing_tool_menu_frame)
-                self.result_panel.add(self.df_table_result_frame)
+                self.open_dataframe_frame(True)
 
             elif btn_click_arg == "mmreg_frame" and self.mpannel_vsblty_state["mmreg_frame"] == False:
-                self.mpannel_vsblty_state["mmreg_frame"] = True
-                self.tool_menu_varselect_panel.add(self.variable_selection_frame)
-                self.tool_submenu_config_panel.add(self.mmreg_tool_menu_submenu_frame)
-                self.result_panel.add(self.mmreg_result_panel)
+                self.open_mmreg_frame(True)
 
             elif btn_click_arg == "corl_matrix_frame" and self.mpannel_vsblty_state["corl_matrix_frame"] == False:
-                self.mpannel_vsblty_state["corl_matrix_frame"] = True
-                self.tool_menu_varselect_panel.add(self.variable_selection_frame)
-                self.tool_submenu_config_panel.add(self.corl_matrix_menu_submenu_frame)
-                self.result_panel.add(self.corl_matrix_result_panel)
+                self.open_corl_matrix_frame(True)
 
             elif btn_click_arg == "logistic_reg_frame" and self.mpannel_vsblty_state["logistic_reg_frame"] == False:
-                self.mpannel_vsblty_state["logistic_reg_frame"] = True
-                self.tool_menu_varselect_panel.add(self.variable_selection_frame)
-                self.tool_submenu_config_panel.add(self.logistic_reg_menu_submenu_frame)
-                self.result_panel.add(self.logistic_reg_result_panel)
+                self.open_logistic_reg_frame(True)
+
 
             
 def main():
