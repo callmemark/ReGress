@@ -62,10 +62,10 @@ def create_multi_result_panel(ttk_arg, tk_arg, orientation_arg, parent_root_fram
 
 
     frames = {
-        "parent_panel" : parent_panel,
-        "plotting_panel" : plotting_panel,
-        "text_output_panel" : text_result_panel,
-        "text_output_display" : text_output_display
+        "parent_panel" : parent_panel, # no parent must be parented to a panel or frame
+        "plotting_panel" : plotting_panel, # parented to "parent_panel"
+        "text_output_panel" : text_result_panel, # parented to "parent_panel"
+        "text_output_display" : text_output_display # parented to "parent_panel"
         }
 
     return frames

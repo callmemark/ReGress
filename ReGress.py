@@ -170,9 +170,8 @@ class ReGress():
         self.init_result_panel()
         self.init_tool_menu_panel()
 
-
-        self.dataframe_editor_tool_menu_frame()
-        self.dataframe_editor_result_frame()
+        self.inti_dataframe_editor_tool_menu_frame()
+        self.init_dataframe_editor_result_frame()
 
         self.MMREG_result_frame()
         self.init_MMREG_tool_menu_frame()
@@ -285,7 +284,7 @@ class ReGress():
         self.tool_menu_varselect_panel = ttk.PanedWindow(
             self.tool_submenu_widget_panel,
             orient = HORIZONTAL,
-            height = 70,
+            height = 150,
             width = self.tool_menu_frame_width
             )
 
@@ -342,14 +341,14 @@ class ReGress():
         # button assigning varible to the x axis
         assign_col_btn = ttk.Button(
             x_var_selection_frame, 
-            text = "Add to X-Axis", 
+            text = "Add operation list", 
             command = lambda: self.update_mmreg_xaxis(add = True, axis = "X", val = selected_var.get())
             )
 
         # button to unaassigning varible to the x axis
         unassign_col_btn = ttk.Button(
             x_var_selection_frame, 
-            text = "remove to X-Axis", 
+            text = "remove operation list", 
             command = lambda: self.update_mmreg_xaxis(add = False, axis = "X", val = selected_var.get())
             )
 
@@ -361,7 +360,7 @@ class ReGress():
             )
             
         # create frame to display selected variables in x axis
-        xaxis_var_disp_frame_label = ttk.Label(text = "X Axis")
+        xaxis_var_disp_frame_label = ttk.Label(text = "(X) Operation Vars")
         self.xaxis_var_disp_frame = ttk.LabelFrame(
             self.variable_selection_frame,
             labelwidget = xaxis_var_disp_frame_label
@@ -381,9 +380,11 @@ class ReGress():
         assign_y_axis_btn.grid(row = 2, column = 0,  sticky = "nsew", pady = 1, padx = 1)
 
         ## grid system variable_selection_frame ##
-        x_var_selection_frame.grid(row = 0, column = 0, sticky = "nsew", pady = 2)
-        self.xaxis_var_disp_frame.grid(row = 0, column = 1, sticky = "nsew", pady = 2, padx = 2)
-        self.yaxis_var_disp_frame.grid(row = 0, column = 2, sticky = "nsew", pady = 2, padx = 2)
+
+        self.variable_selection_frame.columnconfigure(1, weight=1)
+        x_var_selection_frame.grid(row = 0, column = 0, sticky = "ns", pady = 2)
+        self.xaxis_var_disp_frame.grid(row = 0, column = 1, sticky = "ns", pady = 2, padx = 2)
+        self.yaxis_var_disp_frame.grid(row = 0, column = 2, sticky = "ns", pady = 2, padx = 2)
 
          
 
@@ -400,8 +401,7 @@ class ReGress():
 
 
 
-    # deprecate file_selection_tool_menu_frame
-    def dataframe_editor_tool_menu_frame(self):
+    def inti_dataframe_editor_tool_menu_frame(self):
         # This method handles UI for Dataframe manipulation
         # create a button in top navigation panel to select dataset file
 
@@ -411,7 +411,9 @@ class ReGress():
             width = self.tool_menu_frame_width)
 
 
-        new_max_abs_normalize_menu = RgM.create_basic_label_menu_options(
+        # create a basic widget group of confirmation button, Menu button and -
+        # a lable for selecting normalization functions
+        new_normalization_func_menu = RgM.create_basic_label_menu_options(
             tk_arg = tk, 
             ttk_arg = ttk, 
             style_arg = 'tool_lframe.TFrame', 
@@ -420,11 +422,11 @@ class ReGress():
             btn_text_label = "Not Normalized", 
             menu_value_arg = ["max abs scaling", "min max scaling", "z-score scaling"]
             )
-        max_abs_normalize_menu_frame = new_max_abs_normalize_menu["root_frame"]
-        max_abs_normalize_strvar = new_max_abs_normalize_menu["str_var"]
+        normalization_func_menu_frame = new_normalization_func_menu["root_frame"]
+        max_abs_normalize_strvar = new_normalization_func_menu["str_var"]
 
         apply_normalize_btn = ttk.Button(
-            max_abs_normalize_menu_frame, 
+            normalization_func_menu_frame, 
             text = "Apply Normalize",
             command = lambda: self.update_dataframe_editor_result_frame(
                 lgb.get_normalized_df(
@@ -434,39 +436,70 @@ class ReGress():
                     )
                 )
         )
-        #self.pt.model.df
+
+        # create button to remove columns selected in operation list
+        drop_col_btn = ttk.Button(
+            self.df_editing_tool_menu_frame,
+            text = "Drop Selected Columns",
+            command = lambda: self.update_dataframe_editor_result_frame(
+                lgb.DFOperation().drop_col(self.dataset, self.reg_x_axis)
+                )
+            )
+
+
+        # create button to refresh the dataset when the table was edited manually
         refresh_data_frame_btn = ttk.Button(
             self.df_editing_tool_menu_frame,
             text = "Refresh Changes",
             command = lambda: self.update_variable_selection_frame()
             )
 
-        max_abs_normalize_menu_frame.pack(fill = X)
+
+
+
+        normalization_func_menu_frame.pack(fill = X, pady = 2)
         apply_normalize_btn.pack(side = RIGHT, fill = X, padx = 2)
-        refresh_data_frame_btn.pack(side = BOTTOM, fill = X, padx = 2)
+        drop_col_btn.pack(fill = X, pady = 2)
+        refresh_data_frame_btn.pack(side = BOTTOM, fill = X, pady = 7)
       
 
 
-    # deprecate file_selection_result_frame
-    def dataframe_editor_result_frame(self):
+    def init_dataframe_editor_result_frame(self):
         # crete the Result viewport fot the data frame table
-        self.df_table_result_frame = ttk.Frame(
-            self.result_panel, 
-            height = self.main_ui_height, 
-            width = self.tool_menu_frame_width)
+
+        new_df_table_result_frame = RgM.create_multi_result_panel(
+            ttk_arg = ttk, 
+            tk_arg = tk, 
+            orientation_arg = HORIZONTAL,
+            parent_root_frame = self.result_panel, 
+            height_arg = self.main_ui_height, 
+            width_arg = self.tool_menu_frame_width,
+            text_fill = BOTH
+            )
+
+        self.df_table_result_panel = new_df_table_result_frame["parent_panel"]
+        self.df_table_plotting_panel = new_df_table_result_frame["plotting_panel"]
+        self.df_table_text_panel = new_df_table_result_frame["text_output_panel"]
+        self.df_table_text_space = new_df_table_result_frame["text_output_display"]
 
 
 
     def update_variable_selection_frame(self):
         # update the variable sectection frame
-
-
+        # change frame to dataframe editinga frame
         self.update_side_menu_view("df_editor_frame")
+        self.reg_x_axis.clear()
 
+        # get the dataframe displayed in the table
         update_df = self.pt.model.df
+
+        # update list of dataframe headers
         self.df_headers = tuple(update_df.columns)
+
+        # set new dataframe
         self.dataset = update_df
 
+        # remove the variable select frame re initizlize and display again
         self.tool_menu_varselect_panel.remove(self.variable_selection_frame)
         self.init_var_selection_submenu_frame()
         self.tool_menu_varselect_panel.add(self.variable_selection_frame)
@@ -477,7 +510,7 @@ class ReGress():
         # ouput the tabulated display of the dataframe
         self.dataset = df
         
-        self.pt = Table(self.df_table_result_frame, dataframe=df, showtoolbar=False, showstatusbar=True)
+        self.pt = Table(self.df_table_plotting_panel, dataframe=df, showtoolbar=False, showstatusbar=True)
         options = {'colheadercolor':'black','floatprecision': 5}
         config.apply_options(options, self.pt)
         
@@ -902,9 +935,7 @@ class ReGress():
 
 
     def open_variable_selection_panel(self, call_state_open = bool):
-        print("added open var select")
         if call_state_open:
-            print("We are true")
             self.tool_menu_varselect_panel.add(self.variable_selection_frame)
         elif not call_state_open:
             self.tool_menu_varselect_panel.remove(self.variable_selection_frame)
@@ -913,13 +944,13 @@ class ReGress():
     def open_dataframe_frame(self, action_state_open = bool):
         if action_state_open:
             self.mpannel_vsblty_state["df_editor_frame"] = True 
-            self.result_panel.add(self.df_table_result_frame)
+            self.result_panel.add(self.df_table_result_panel)
             self.open_variable_selection_panel(True)
             self.tool_submenu_config_panel.add(self.df_editing_tool_menu_frame)
         elif not action_state_open:
             self.mpannel_vsblty_state["df_editor_frame"] = False
             self.open_variable_selection_panel(False)
-            self.result_panel.remove(self.df_table_result_frame)
+            self.result_panel.remove(self.df_table_result_panel)
             self.tool_submenu_config_panel.remove(self.df_editing_tool_menu_frame)
 
 
@@ -1011,7 +1042,6 @@ class ReGress():
 
             
 def main():
-    #app = tk.Tk()
     app = ThemedTk(theme="black")
     app_UI = ReGress(app)
     app_UI.init_app()
