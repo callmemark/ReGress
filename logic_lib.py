@@ -184,3 +184,18 @@ class DFOperation():
             new_df = new_df.drop(col, axis = 1)
 
         return new_df
+    
+
+def get_df_info(df_to_get_arg, df_arg):
+    if df_to_get_arg == "Shape":
+        return ("Data frame Shape: " , df_arg.shape, " \n ")
+    elif df_to_get_arg == "Index":
+        return ("Data frame Index: ", df_arg.index, " \n ")
+    elif df_to_get_arg == "Columns":
+        return ("Data frame Columns", df_arg.columns, " \n ")
+    elif df_to_get_arg == "Info":
+        return ("Data frame Columns: ", df_arg.info(), " \n ")
+    elif df_to_get_arg == "Count":
+        return ("Data frame Count: ", df_arg.count(), " \n ")
+    elif df_to_get_arg == "" or df_to_get_arg == None:
+        return "Please selcted information to show"
