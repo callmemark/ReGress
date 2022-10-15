@@ -111,3 +111,17 @@ def create_basic_label_menu_options(tk_arg, ttk_arg, style_arg, frame_parent_arg
 
     return frames
 
+
+class UndoRedoSys():
+    def __init__(self, main_df, saving_steps = 5):
+        self.undo_steps = []
+        self.redo_steps = []
+
+    def update_undo_redo_sys(self, ):
+        pass
+
+    def undo_action(self):
+        pass
+
+    def redo_action(self):
+        pass
