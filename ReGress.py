@@ -411,6 +411,7 @@ class ReGress():
             width = self.tool_menu_frame_width)
 
 
+
         # create a basic widget group of confirmation button, Menu button and -
         # a lable for selecting normalization functions
         new_normalization_func_menu = RgM.create_basic_label_menu_options(
@@ -455,10 +456,58 @@ class ReGress():
             )
 
 
+        # create a basic menu for showing basic information
+        new_show_df_info_menu = RgM.create_basic_label_menu_options(
+            tk_arg = tk, 
+            ttk_arg = ttk, 
+            style_arg = 'tool_lframe.TFrame', 
+            frame_parent_arg = self.df_editing_tool_menu_frame, 
+            label_txt_label = "Show Basic Information", 
+            btn_text_label = "None Selected", 
+            menu_value_arg = ["Shape", "Index", "Columns", "Info", "Count"]
+            )
+
+        show_df_info_menu_frame = new_show_df_info_menu["root_frame"]
+        show_df_info_menu_strvar = new_show_df_info_menu["str_var"]
+
+        confirm_show_df_info_btn = ttk.Button(
+            show_df_info_menu_frame, 
+            text = "Show Information",
+            command = lambda: self.df_table_text_space.insert("1.0", lgb.get_df_info(show_df_info_menu_strvar.get(), self.dataset))
+            )
+
+
+        # create a basic menu for showing df summary
+        new_show_df_summary_menu = RgM.create_basic_label_menu_options(
+            tk_arg = tk, 
+            ttk_arg = ttk, 
+            style_arg = 'tool_lframe.TFrame', 
+            frame_parent_arg = self.df_editing_tool_menu_frame, 
+            label_txt_label = "Show Summary", 
+            btn_text_label = "None Selected", 
+            menu_value_arg = ["Sum", "CumSum", "Min", "Max", "Describe", "Mean", "Median"]
+            )
+
+        show_df_summary_menu_frame = new_show_df_summary_menu["root_frame"]
+        show_df_summary_menu_strvar = new_show_df_summary_menu["str_var"]
+
+        confirm_show_df_summary_btn = ttk.Button(
+            show_df_summary_menu_frame, 
+            text = "Show Summary",
+            command = lambda: self.df_table_text_space.insert("1.0", lgb.get_df_summary(show_df_summary_menu_strvar.get(), self.dataset))
+            )
+
 
 
         normalization_func_menu_frame.pack(fill = X, pady = 2)
         apply_normalize_btn.pack(side = RIGHT, fill = X, padx = 2)
+
+        show_df_info_menu_frame.pack(fill = X, pady = 2)
+        confirm_show_df_info_btn.pack(side = RIGHT, fill = X, padx = 2)
+
+        show_df_summary_menu_frame.pack(fill = X, pady = 2)
+        confirm_show_df_summary_btn.pack(side = RIGHT, fill = X, padx = 2)
+
         drop_col_btn.pack(fill = X, pady = 2)
         refresh_data_frame_btn.pack(side = BOTTOM, fill = X, pady = 7)
       
