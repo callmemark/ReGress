@@ -228,3 +228,11 @@ def get_df_summary(summary_to_get, df_arg):
 
     elif summary_to_get == "Median":
         return ("Data frame Median: ", df_arg.median(), " \n ")
+
+
+
+def sort_rank_df(task_arg, df_arg):
+    if task_arg == "Sort Index":
+        return df_arg.sort_index()
+    elif task_arg == "Rank":
+        return df_arg.rank()

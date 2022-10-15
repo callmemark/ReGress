@@ -120,6 +120,11 @@ class ReGress():
             background = self.main_accent_color
             )
 
+        ttk.Style().configure(
+            "TEntry",
+            background = "#595959",
+            )
+
 
         nav_tool_btn_style = ttk.Style()
         nav_tool_btn_style.configure(
@@ -495,6 +500,29 @@ class ReGress():
             )
 
 
+        # create a basic menu for sorting and Ranking
+        new_sort_rank_df_menu = RgM.create_basic_label_menu_options(
+            tk_arg = tk, 
+            ttk_arg = ttk, 
+            style_arg = 'tool_lframe.TFrame', 
+            frame_parent_arg = self.df_editing_tool_menu_frame, 
+            label_txt_label = "Sort & Rank", 
+            btn_text_label = "None Selected", 
+            menu_value_arg = ["Sort Index", "Rank"]
+            )
+
+        sort_rank_df_menu_frame = new_sort_rank_df_menu["root_frame"]
+        sort_rank_df_menu_strvar = new_sort_rank_df_menu["str_var"]
+
+        confirm_sort_rank_df_btn = ttk.Button(
+            sort_rank_df_menu_frame, 
+            text = "Confirm",
+            command = lambda: self.update_dataframe_editor_result_frame(
+                    lgb.sort_rank_df(sort_rank_df_menu_strvar.get(), self.dataset)
+                )
+            )
+
+
 
         normalization_func_menu_frame.pack(fill = X, pady = 2)
         apply_normalize_btn.pack(side = RIGHT, fill = X, padx = 2)
@@ -504,6 +532,9 @@ class ReGress():
 
         show_df_summary_menu_frame.pack(fill = X, pady = 2)
         confirm_show_df_summary_btn.pack(side = RIGHT, fill = X, padx = 2)
+
+        sort_rank_df_menu_frame.pack(fill = X, pady = 2)
+        confirm_sort_rank_df_btn.pack(side = RIGHT, fill = X, padx = 2)
 
         drop_col_btn.pack(fill = X, pady = 2)
         refresh_data_frame_btn.pack(side = BOTTOM, fill = X, pady = 7)
@@ -559,7 +590,8 @@ class ReGress():
         self.pt = Table(self.df_table_plotting_panel, dataframe=df, showtoolbar=False, showstatusbar=True)
         options = {'colheadercolor':'black','floatprecision': 5}
         config.apply_options(options, self.pt)
-        
+       
+
         self.pt.show()
         
         self.update_variable_selection_frame()
