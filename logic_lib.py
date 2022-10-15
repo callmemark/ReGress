@@ -186,16 +186,45 @@ class DFOperation():
         return new_df
     
 
-def get_df_info(df_to_get_arg, df_arg):
-    if df_to_get_arg == "Shape":
+def get_df_info(inf_to_get_arg, df_arg):
+    if inf_to_get_arg == "Shape":
         return ("Data frame Shape: " , df_arg.shape, " \n ")
-    elif df_to_get_arg == "Index":
+    elif inf_to_get_arg == "Index":
         return ("Data frame Index: ", df_arg.index, " \n ")
-    elif df_to_get_arg == "Columns":
+    elif inf_to_get_arg == "Columns":
         return ("Data frame Columns", df_arg.columns, " \n ")
-    elif df_to_get_arg == "Info":
+    elif inf_to_get_arg == "Info":
         return ("Data frame Columns: ", df_arg.info(), " \n ")
-    elif df_to_get_arg == "Count":
+    elif inf_to_get_arg == "Count":
         return ("Data frame Count: ", df_arg.count(), " \n ")
-    elif df_to_get_arg == "" or df_to_get_arg == None:
+    elif inf_to_get_arg == "" or inf_to_get_arg == None:
         return "Please selcted information to show"
+
+
+def get_df_summary(summary_to_get, df_arg):
+    if summary_to_get == "Sum":
+        return ("Data frame Sum: " , df_arg.sum(), " \n ")
+
+    elif summary_to_get == "CumSum":
+        return ("Data frame CumSum: ", df_arg.cumsum(), " \n ")
+
+    elif summary_to_get == "Min":
+        return ("Data frame Min: ", df_arg.min(), " \n ")
+
+    elif summary_to_get == "Max":
+        return ("Data frame Max: ", df_arg.max(), " \n ")
+
+    elif summary_to_get == "MaxIndex":
+        return ("Data frame MaxIndex: ", df_arg.idxmin(), " \n ")
+
+    elif summary_to_get == "MinIndex":
+        return ("Data frame MinIndex: ", df_arg.idxmax(), " \n ")
+
+    elif summary_to_get == "Describe":
+        return ("Data frame Describe: ", df_arg.describe(), " \n ")
+
+    elif summary_to_get == "Mean":
+        return ("Data frame Mean: ", df_arg.mean(), " \n ")
+
+    elif summary_to_get == "Median":
+        return ("Data frame Median: ", df_arg.median(), " \n ")
