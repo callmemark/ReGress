@@ -171,3 +171,16 @@ def get_normalized_df(method_arg, df_arg, column_applied_arg):
         return init_NM.min_max_scaling(df_arg, column_applied_arg)
     elif method_arg == "z-score scaling":
         return init_NM.z_score_scaling(df_arg, column_applied_arg)
+
+
+
+class DFOperation():
+    def __init__(self):
+        pass
+
+    def drop_col(self, df_arg, cols_arg):
+        new_df = df_arg
+        for col in cols_arg:
+            new_df = new_df.drop(col, axis = 1)
+
+        return new_df
