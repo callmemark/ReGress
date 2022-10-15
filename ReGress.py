@@ -32,20 +32,18 @@ class ReGress():
     def __init__(self, application):
         self.app = application
         self.app.geometry("1000x600")
-
+        
         self.main_ui_height = 600
         self.main_ui_width = 1000
 
         self.tool_menu_frame_width = 240
-
 
         # dataset variables
         self.dataset = None
         self.dataset_baackup_copy = None
         self.df_headers = []
 
-
-
+        
         # handles the visibility state of the side menu panel
         self.mpannel_vsblty_state = {
             "df_editor_frame" : False,
@@ -60,9 +58,11 @@ class ReGress():
 
 
         ##  Styling varibales  ##
-        self.font_color_white = "#b0b0b0"
+        self.font_color_white = "#e4e1f7"
         self.main_accent_color = "#212121"
-        self.secondary_accent_color = "#424242"
+        self.secondary_accent_color = "#4b4b4b"
+
+        sns.set(rc={'axes.facecolor':'#292941', 'figure.facecolor':'#292941'})
 
 
         ## override customize styles ##
@@ -74,10 +74,11 @@ class ReGress():
             borderwidth = 0,
             relief = FLAT,
             highlightthickness = 0,
-            pady = 10,
-            padx = 7,
+            pady = 4,
+            padx = 4,
+            ipady = 10,
             foreground = self.font_color_white,
-            background = self.main_accent_color
+            background = self.secondary_accent_color
             )
 
         menubtn_theme_style = ttk.Style()
@@ -107,24 +108,19 @@ class ReGress():
             background = self.main_accent_color
             )
 
-        lframe_custom_theme = ttk.Style()
-        lframe_custom_theme.configure(
-            'TLabelframe',
-            relief = 'solid', 
-            background = self.secondary_accent_color,
-            bordercolor = self.main_accent_color,
-            borderwidth = 4
-            )
-        lframe_custom_theme.configure(
-            'TLabelframe.Label',
-            relief = 'solid', 
+
+        # Styling for variable selection frame
+        ttk.Style().configure(
+            "nav_tool.TLabelframe",
             background = self.main_accent_color,
             borderwidth = 4
             )
+        ttk.Style().configure(
+            "nav_tool.TLabelframe.Label",
+            background = self.main_accent_color
+            )
 
 
-        ## different customize style ##
-        # button style for header button
         nav_tool_btn_style = ttk.Style()
         nav_tool_btn_style.configure(
             "nav_tool.TButton",
@@ -156,11 +152,9 @@ class ReGress():
         tool_lframe_custom_theme.configure(
             'tool_lframe.TFrame',
             relief = 'solid',
-            background = "#1c1c1c",
-            bordercolor = "#1c1c1c"
+            background = self.secondary_accent_color,
+            bordercolor = self.secondary_accent_color
             )
-
-
         
 
     def init_app(self):
@@ -309,7 +303,7 @@ class ReGress():
         variable_selection_frame_label = ttk.Label(text = "Variable Selection") #style = "lfram_label_widg_dark.TLabel"
         self.variable_selection_frame = ttk.LabelFrame(
             self.tool_menu_varselect_panel,
-            style = 'tool_lframe.TLabelframe',
+            style = "nav_tool.TLabelframe",
             labelwidget = variable_selection_frame_label
             )
 
@@ -317,7 +311,8 @@ class ReGress():
         x_var_selection_frame_label = ttk.Label(text = "Values") #style = "lfram_label_widg_dark.TLabel"
         x_var_selection_frame =  ttk.LabelFrame(
             self.variable_selection_frame,
-            labelwidget = x_var_selection_frame_label
+            labelwidget = x_var_selection_frame_label,
+            style = "nav_tool.TLabelframe.Label"
             )
 
 
@@ -341,14 +336,14 @@ class ReGress():
         # button assigning varible to the x axis
         assign_col_btn = ttk.Button(
             x_var_selection_frame, 
-            text = "Add operation list", 
+            text = "Add to operation list", 
             command = lambda: self.update_mmreg_xaxis(add = True, axis = "X", val = selected_var.get())
             )
 
         # button to unaassigning varible to the x axis
         unassign_col_btn = ttk.Button(
             x_var_selection_frame, 
-            text = "remove operation list", 
+            text = "Remove in operation list", 
             command = lambda: self.update_mmreg_xaxis(add = False, axis = "X", val = selected_var.get())
             )
 
@@ -363,28 +358,30 @@ class ReGress():
         xaxis_var_disp_frame_label = ttk.Label(text = "(X) Operation Vars")
         self.xaxis_var_disp_frame = ttk.LabelFrame(
             self.variable_selection_frame,
-            labelwidget = xaxis_var_disp_frame_label
+            labelwidget = xaxis_var_disp_frame_label,
+            style = "nav_tool.TLabelframe.Label"
             )
 
         # create frame to display selected variables in y axis
         yaxis_var_disp_frame_label = ttk.Label(text = "Y Axis")
         self.yaxis_var_disp_frame = ttk.LabelFrame(
             self.variable_selection_frame, 
-            labelwidget = yaxis_var_disp_frame_label
+            labelwidget = yaxis_var_disp_frame_label,
+            style = "nav_tool.TLabelframe.Label"
             )
 
         # x_var_selection_frame Grid layout
         x_axis_col_slctn_btn.grid(row = 0, column = 0, sticky = "nsew",  pady = 1, padx = 1)
         assign_col_btn.grid(row = 1, column = 0, sticky = "nsew", pady = 1, padx = 1)
-        unassign_col_btn.grid(row = 1, column = 1, sticky = "nsew", pady = 1, padx = 1)
-        assign_y_axis_btn.grid(row = 2, column = 0,  sticky = "nsew", pady = 1, padx = 1)
+        unassign_col_btn.grid(row = 2, column = 0, sticky = "nsew", pady = 1, padx = 1)
+        assign_y_axis_btn.grid(row = 3, column = 0,  sticky = "nsew", pady = 5, padx = 1)
 
         ## grid system variable_selection_frame ##
 
         self.variable_selection_frame.columnconfigure(1, weight=1)
         x_var_selection_frame.grid(row = 0, column = 0, sticky = "ns", pady = 2)
-        self.xaxis_var_disp_frame.grid(row = 0, column = 1, sticky = "ns", pady = 2, padx = 2)
-        self.yaxis_var_disp_frame.grid(row = 0, column = 2, sticky = "ns", pady = 2, padx = 2)
+        self.xaxis_var_disp_frame.grid(row = 0, column = 1, sticky = "ns", pady = 2)
+        self.yaxis_var_disp_frame.grid(row = 0, column = 2, sticky = "ns", pady = 2)
 
          
 
@@ -602,7 +599,7 @@ class ReGress():
             padding = 1,
             height = self.main_ui_height,
             width = self.tool_menu_frame_width,
-            style = 'tool_lframe.TLabelframe'
+            #style = 'tool_lframe.TLabelframe'
             )
 
         # fit intercept parameter UI frame
@@ -793,7 +790,7 @@ class ReGress():
         x_axis = mmreg_output_axis[0]
         y_axis = mmreg_output_axis[1]
 
-        plt.style.use("dark_background")
+        #plt.style.use("dark_background")
         fig = Figure(figsize=(5, 4), dpi=100)
         ax1 = fig.subplots()
         #fig.add_subplot(111).scatter(x_axis, y_axis)
@@ -868,7 +865,7 @@ class ReGress():
             padding = 1,
             height = self.main_ui_height,
             width = self.tool_menu_frame_width,
-            style = 'tool_lframe.TLabelframe'
+            #style = 'tool_lframe.TLabelframe'
             )
 
 
@@ -902,7 +899,7 @@ class ReGress():
             widget.destroy()
 
 
-        plt.style.use("dark_background")
+        #plt.style.use("dark_background")
         fig = Figure(figsize=(5, 4), dpi=100)
         ax1 = fig.subplots()
 
@@ -928,7 +925,7 @@ class ReGress():
             padding = 1,
             height = self.main_ui_height,
             width = self.tool_menu_frame_width,
-            style = 'tool_lframe.TLabelframe'
+            #style = 'tool_lframe.TLabelframe'
             )
 
         refresh_logistic_reg_plot = ttk.Button(
@@ -960,7 +957,7 @@ class ReGress():
             widget.destroy()
 
 
-        plt.style.use("dark_background")
+        #plt.style.use("dark_background")
         fig = Figure(figsize=(5, 4), dpi=100)
         ax1 = fig.subplots()
 
