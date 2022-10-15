@@ -1,8 +1,3 @@
-#from asyncio.windows_events import NULL
-#from doctest import master
-#from re import T
-#from turtle import width
-
 import pandas as pd
 from pandastable import Table, config
 
@@ -40,7 +35,7 @@ class ReGress():
 
         # dataset variables
         self.dataset = None
-        self.dataset_baackup_copy = None
+        self.dataset_backup_copy = None
         self.df_headers = []
 
         
@@ -118,6 +113,11 @@ class ReGress():
         ttk.Style().configure(
             "nav_tool.TLabelframe.Label",
             background = self.main_accent_color
+            )
+
+        ttk.Style().configure(
+            "TEntry",
+            background = "#595959",
             )
 
 
@@ -337,21 +337,21 @@ class ReGress():
         assign_col_btn = ttk.Button(
             x_var_selection_frame, 
             text = "Add to operation list", 
-            command = lambda: self.update_mmreg_xaxis(add = True, axis = "X", val = selected_var.get())
+            command = lambda: self.update_variable_selection_list(add = True, axis = "X", val = selected_var.get())
             )
 
         # button to unaassigning varible to the x axis
         unassign_col_btn = ttk.Button(
             x_var_selection_frame, 
             text = "Remove in operation list", 
-            command = lambda: self.update_mmreg_xaxis(add = False, axis = "X", val = selected_var.get())
+            command = lambda: self.update_variable_selection_list(add = False, axis = "X", val = selected_var.get())
             )
 
         # button to set y varibale value
         assign_y_axis_btn = ttk.Button(
             x_var_selection_frame,
             text = "Use Y axis",
-            command = lambda: self.update_mmreg_xaxis(add = True, axis = "Y", val = selected_var.get())
+            command = lambda: self.update_variable_selection_list(add = True, axis = "Y", val = selected_var.get())
             )
             
         # create frame to display selected variables in x axis
@@ -383,7 +383,60 @@ class ReGress():
         self.xaxis_var_disp_frame.grid(row = 0, column = 1, sticky = "ns", pady = 2)
         self.yaxis_var_disp_frame.grid(row = 0, column = 2, sticky = "ns", pady = 2)
 
-         
+
+
+    # deprecated update_mmreg_xaxis renamed
+    def update_variable_selection_list(self, add = True, axis = "X", val = ""):
+        if axis == "X":
+            if add and not(val in self.reg_x_axis) and val != "":
+                self.reg_x_axis.append(val)
+            
+            elif not add and val in self.reg_x_axis and val != "":
+                self.reg_x_axis.remove(val)
+
+            self.refresh_xvariable_selection_list(self.df_headers)
+
+        elif axis == "Y":
+            self.reg_y_axis = val
+            self.refresh_yvaribale_selection_list(self.df_headers)
+
+
+    def refresh_xvariable_selection_list(self, df_headers_list_arg):
+        # Remove all the widgets in the sidplay frame to prevent widgets with same text value
+        for widget in self.xaxis_var_disp_frame.winfo_children():
+            widget.destroy()
+
+        # check if the value in selected x_variables or operation variable is in the new updated dataset
+        for old_head_val in self.reg_x_axis:
+            if not(old_head_val in df_headers_list_arg):
+                self.reg_x_axis.remove(old_head_val)
+
+        # iterate through list reg_x_axis where x axis variable are stored and call 
+        # function create_new_label to add new label displaying varibale names in the frame
+        for val in self.reg_x_axis:
+            self.create_new_label(val, "X")
+
+
+
+    def refresh_yvaribale_selection_list(self, df_header_list_arg):
+        for widget in self.yaxis_var_disp_frame.winfo_children():
+                widget.destroy()
+
+        if self.reg_y_axis in df_header_list_arg:
+            self.create_new_label(self.reg_y_axis, "Y")
+
+
+
+    def create_new_label(self, text_param, axis):
+        # add new label widgets 
+        if axis == "X":
+            if not(text_param == '') or not(text_param == None):
+                new_label = ttk.Label(self.xaxis_var_disp_frame, text = text_param)
+                new_label.pack(fill = X)
+        elif axis == "Y":
+            if not(text_param == '') or not(text_param == None):
+                new_label = ttk.Label(self.yaxis_var_disp_frame, text = text_param)
+                new_label.pack(fill = X)
 
 
     def init_result_panel(self):
@@ -429,7 +482,7 @@ class ReGress():
             command = lambda: self.update_dataframe_editor_result_frame(
                 lgb.get_normalized_df(
                     max_abs_normalize_strvar.get(),
-                    self.dataset_baackup_copy,
+                    self.dataset,
                     self.reg_x_axis,
                     )
                 )
@@ -444,13 +497,6 @@ class ReGress():
                 )
             )
 
-
-        # create button to refresh the dataset when the table was edited manually
-        refresh_data_frame_btn = ttk.Button(
-            self.df_editing_tool_menu_frame,
-            text = "Refresh Changes",
-            command = lambda: self.update_variable_selection_frame()
-            )
 
 
         # create a basic menu for showing basic information
@@ -495,6 +541,56 @@ class ReGress():
             )
 
 
+        # create a basic menu for sorting and Ranking
+        new_sort_rank_df_menu = RgM.create_basic_label_menu_options(
+            tk_arg = tk, 
+            ttk_arg = ttk, 
+            style_arg = 'tool_lframe.TFrame', 
+            frame_parent_arg = self.df_editing_tool_menu_frame, 
+            label_txt_label = "Sort & Rank", 
+            btn_text_label = "None Selected", 
+            menu_value_arg = ["Sort Index", "Rank"]
+            )
+
+        sort_rank_df_menu_frame = new_sort_rank_df_menu["root_frame"]
+        sort_rank_df_menu_strvar = new_sort_rank_df_menu["str_var"]
+
+        confirm_sort_rank_df_btn = ttk.Button(
+            sort_rank_df_menu_frame, 
+            text = "Confirm",
+            command = lambda: self.update_dataframe_editor_result_frame(
+                    lgb.sort_rank_df(sort_rank_df_menu_strvar.get(), self.dataset)
+                )
+            )
+
+
+        # create a button to fill cell with value Nan or have no value
+        fill_df_nanval_btn = ttk.Button(
+            self.df_editing_tool_menu_frame,
+            text = "Fill Nan value with 0",
+            command = lambda: self.update_dataframe_editor_result_frame(
+                self.dataset.fillna(0)
+                )
+            )
+
+
+        # create a button to reset dataset back to original file
+        restore_orig_df_btn = ttk.Button(
+            self.df_editing_tool_menu_frame,
+            text = "Restore Original Dataset",
+            command = lambda: self.update_dataframe_editor_result_frame(
+                self.dataset_backup_copy
+                )
+            )
+
+
+        # create button to refresh the dataset when the table was edited manually
+        refresh_data_frame_btn = ttk.Button(
+            self.df_editing_tool_menu_frame,
+            text = "Refresh Changes",
+            command = lambda: self.update_variable_selection_frame()
+            )
+
 
         normalization_func_menu_frame.pack(fill = X, pady = 2)
         apply_normalize_btn.pack(side = RIGHT, fill = X, padx = 2)
@@ -505,7 +601,14 @@ class ReGress():
         show_df_summary_menu_frame.pack(fill = X, pady = 2)
         confirm_show_df_summary_btn.pack(side = RIGHT, fill = X, padx = 2)
 
+        sort_rank_df_menu_frame.pack(fill = X, pady = 2)
+        confirm_sort_rank_df_btn.pack(side = RIGHT, fill = X, padx = 2)
+
+        fill_df_nanval_btn.pack(fill = X, pady = 2)
+
         drop_col_btn.pack(fill = X, pady = 2)
+
+        restore_orig_df_btn.pack(side = BOTTOM, fill = X, pady = 2)
         refresh_data_frame_btn.pack(side = BOTTOM, fill = X, pady = 7)
       
 
@@ -534,21 +637,24 @@ class ReGress():
         # update the variable sectection frame
         # change frame to dataframe editinga frame
         self.update_side_menu_view("df_editor_frame")
-        self.reg_x_axis.clear()
 
         # get the dataframe displayed in the table
         update_df = self.pt.model.df
 
+        # set new dataframe
+        self.dataset = update_df
+
         # update list of dataframe headers
         self.df_headers = tuple(update_df.columns)
 
-        # set new dataframe
-        self.dataset = update_df
 
         # remove the variable select frame re initizlize and display again
         self.tool_menu_varselect_panel.remove(self.variable_selection_frame)
         self.init_var_selection_submenu_frame()
         self.tool_menu_varselect_panel.add(self.variable_selection_frame)
+
+        self.refresh_xvariable_selection_list(update_df.columns)
+        self.refresh_yvaribale_selection_list(update_df.columns)
 
 
         
@@ -559,7 +665,7 @@ class ReGress():
         self.pt = Table(self.df_table_plotting_panel, dataframe=df, showtoolbar=False, showstatusbar=True)
         options = {'colheadercolor':'black','floatprecision': 5}
         config.apply_options(options, self.pt)
-        
+       
         self.pt.show()
         
         self.update_variable_selection_frame()
@@ -577,7 +683,7 @@ class ReGress():
             self.dataset = data_return
 
             # create a copy of the dataset
-            self.dataset_baackup_copy = data_return
+            self.dataset_backup_copy = data_return.copy()
 
             # get the headers and convert to tuple then store in variable
             # this headers will be used for selecting in variable selection menu
@@ -817,44 +923,6 @@ class ReGress():
         self.MMREG_stat_res_text_space.insert("1.0", stat_res)
         self.MMREG_stat_res_text_space['state'] = 'disabled'
         
-
-
-    def create_new_label(self, text_param, axis):
-        # add new label widgets 
-        if axis == "X":
-            if not(text_param == '') or not(text_param == None):
-                new_label = ttk.Label(self.xaxis_var_disp_frame, text = text_param)
-                new_label.pack(fill = X)
-        elif axis == "Y":
-            if not(text_param == '') or not(text_param == None):
-                new_label = ttk.Label(self.yaxis_var_disp_frame, text = text_param)
-                new_label.pack(fill = X)
-
-
-
-    def update_mmreg_xaxis(self, add = True, axis = "X", val = "str"):
-        if axis == "X":
-            if add and not(val in self.reg_x_axis) and val != "":
-                self.reg_x_axis.append(val)
-            
-            elif not add and val in self.reg_x_axis and val != "":
-                self.reg_x_axis.remove(val)
-
-            # Remove all the woidgets in the sidplay frame to prevent sidgets with same text value
-            for widget in self.xaxis_var_disp_frame.winfo_children():
-                widget.destroy()
-
-            # iterate through list reg_x_axis where x axis variable are stored and call 
-            # function create_new_label to add new label displaying varibale names in the frame
-            for val in self.reg_x_axis:
-                self.create_new_label(val, axis)
-
-        elif axis == "Y":
-            for widget in self.yaxis_var_disp_frame.winfo_children():
-                widget.destroy()
-
-            self.reg_y_axis = val
-            self.create_new_label(self.reg_y_axis, axis)
 
 
     def init_correlation_matrix_tool_menu_frame(self):
