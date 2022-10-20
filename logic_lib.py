@@ -162,6 +162,7 @@ class NormalizationMethods():
         return df
 
 
+
 def get_normalized_df(method_arg, df_arg, column_applied_arg):
     init_NM = NormalizationMethods()
 
@@ -171,6 +172,8 @@ def get_normalized_df(method_arg, df_arg, column_applied_arg):
         return init_NM.min_max_scaling(df_arg, column_applied_arg)
     elif method_arg == "z-score scaling":
         return init_NM.z_score_scaling(df_arg, column_applied_arg)
+    elif method_arg == "" or method_arg == "Not Normalized":
+        return df_arg
 
 
 
@@ -229,6 +232,8 @@ def get_df_summary(summary_to_get, df_arg):
     elif summary_to_get == "Median":
         return ("Data frame Median: ", df_arg.median(), " \n ")
 
+    elif summary_to_get == "None Selected" or summary_to_get == "":
+        return df_arg
 
 
 def sort_rank_df(task_arg, df_arg):
@@ -236,3 +241,5 @@ def sort_rank_df(task_arg, df_arg):
         return df_arg.sort_index()
     elif task_arg == "Rank":
         return df_arg.rank()
+    elif task_arg == "None Selected" or task_arg == "":
+        return df_arg
