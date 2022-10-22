@@ -204,7 +204,7 @@ class CombWidgets():
 
         if hover_text != None: self.hover_tip(text_entry, hover_text, hover_delay = hover_delay_arg)
 
-        text_entry.pack(fill = "x", padx = 5, pady = 1, ipady = 5)
+        text_entry.pack(fill = "x", padx = 5, pady = 1)
 
         widgets = {
             "string_var" : text_entry_strvar,
@@ -271,7 +271,7 @@ class CombWidgets():
         menu_entry = self.ttk.Entry(parent_frame, textvariable = menu_label_string_var)
 
         menu_label.pack(side = "left", fill = "x", pady = 2, padx = 4, ipady = 5)
-        menu_entry.pack(side = "right", fill = "x", pady = 2, padx = 4, ipady = 5)
+        menu_entry.pack(side = "right", fill = "x", pady = 2, padx = 4)
 
         widgets = {
             "parent_frame" : parent_frame,
