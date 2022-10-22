@@ -1,3 +1,12 @@
+# Copyright @ 2022 
+# Licensed under GNU General Public License v3.0
+# 
+# Author: Mark John Velmonte
+# 
+# This is the main GUI program of the ReGress Software
+# It handles different frames and widgets it handles frame switching and other GUI application
+
+
 import pandas as pd
 from pandastable import Table, config
 
@@ -69,7 +78,9 @@ class ReGress():
             'axes.spines.top' : False,
             'axes.spines.right' : False,
             'xtick.color' : self.font_color_white,
-            'ytick.color' : self.font_color_white
+            'ytick.color' : self.font_color_white,
+            'axes.titlecolor' : self.font_color_white,
+            'axes.labelcolor' : self.font_color_white,
             })
         sns.set_palette("pastel")
 
@@ -750,6 +761,7 @@ class ReGress():
         stat_output_mmreg_param_strvar = new_mmreg_normalize_func_menu_widgets["string_var"]
 
 
+        ## PLOTTING MWNE OPTIONS ##
         # create a menu for entering plot title
         new_mmreg_plot_title_menu = self.grouped_widgets.create_labeled_text_entry(
             root_frame = self.mmreg_tool_menu_submenu_frame,
@@ -759,6 +771,29 @@ class ReGress():
 
         mmreg_plot_title_entry_frame = new_mmreg_plot_title_menu["parent_frame"]
         mmreg_plot_title_string_var = new_mmreg_plot_title_menu["string_var"]
+
+        # create a menu for entering plot x label
+        new_mmreg_plot_xlabel_menu = self.grouped_widgets.create_labeled_text_entry(
+            root_frame = self.mmreg_tool_menu_submenu_frame,
+            frame_text_label = "X axis Label",
+            hover_text = "Add title to the X axis"
+            )
+
+        mmreg_plot_xlabel_entry_frame = new_mmreg_plot_xlabel_menu["parent_frame"]
+        mmreg_plot_xlabel_string_var = new_mmreg_plot_xlabel_menu["string_var"]
+
+        # create a menu for entering plot y label
+        new_mmreg_plot_ylabel_menu = self.grouped_widgets.create_labeled_text_entry(
+            root_frame = self.mmreg_tool_menu_submenu_frame,
+            frame_text_label = "Y axis Label",
+            hover_text = "Add title to the Y axis"
+            )
+
+        mmreg_plot_ylabel_entry_frame = new_mmreg_plot_ylabel_menu["parent_frame"]
+        mmreg_plot_ylabel_string_var = new_mmreg_plot_ylabel_menu["string_var"]
+
+
+
 
 
 
@@ -770,7 +805,10 @@ class ReGress():
                 fit_intercept_param = fit_intcept_param_strvar.get(),
                 positive_coef_param = positive_coef_mmreg_param_strvar.get(),
                 njob_param = njob_param_strvar.get(),
-                stat_ouput_source = stat_output_mmreg_param_strvar.get()
+                stat_ouput_source = stat_output_mmreg_param_strvar.get(),
+                plot_title = mmreg_plot_title_string_var.get(),
+                plot_xaxis_label = mmreg_plot_xlabel_string_var.get(),
+                plot_yaxis_label = mmreg_plot_ylabel_string_var.get()
                 ))
 
 
@@ -778,14 +816,13 @@ class ReGress():
 
         # mmreg_tool_menu_submenu_frame grid layout
         fit_intcept_param_parent_frame.pack(fill = X, padx = 5, pady = 1)
-
         njob_param_frame.pack(fill = X, padx = 5, pady = 1)
-
         stat_output_mmreg_param_parent_frame.pack(fill = X, padx = 5, pady = 1)
-
         positive_coef_mmreg_param_parent_frame.pack(fill = X, padx = 5, pady = 1)
 
         mmreg_plot_title_entry_frame.pack(fill = X, padx = 5, pady = 1)
+        mmreg_plot_xlabel_entry_frame.pack(fill = X, padx = 5, pady = 1)
+        mmreg_plot_ylabel_entry_frame.pack(fill = X, padx = 5, pady = 1)
 
         diplay_plot_btn.pack(fill = X, padx = 5, pady = 15)
         
@@ -806,7 +843,7 @@ class ReGress():
         
 
 
-    def MMREG_update_result_output_plot(self, fit_intercept_param, positive_coef_param, njob_param, stat_ouput_source):
+    def MMREG_update_result_output_plot(self, fit_intercept_param, positive_coef_param, njob_param, stat_ouput_source, plot_title, plot_xaxis_label, plot_yaxis_label):
         # check variable valur
         if stat_ouput_source ==  "":
             stat_ouput_source = "StatModel"
@@ -852,8 +889,17 @@ class ReGress():
         ax1 = fig.subplots()
 
         
-        #fig.add_subplot(111).scatter(x_axis, y_axis)
-        sns.regplot(x = x_axis, y = y_axis , ci=None, ax = ax1)
+        # plot the value
+        sns.regplot(
+            x = x_axis, 
+            y = y_axis , 
+            ci=None, 
+            ax = ax1
+            ).set(
+                xlabel = plot_xaxis_label, 
+                ylabel = plot_yaxis_label, 
+                title = plot_title
+                )
 
         # add the plot and the tool control of matplotlib to the mmreg_res_plot_panel
         canvas = FigureCanvasTkAgg(fig, master = self.mmreg_res_plot_panel) 
@@ -861,6 +907,7 @@ class ReGress():
         canvas.get_tk_widget().pack(side = TOP, fill = BOTH, expand=1)
 
         toolbar = NavigationToolbar2Tk(canvas, self.mmreg_res_plot_panel)
+        toolbar.config(background="#212121", text_color = self.font_color_white)
         toolbar.update()
         canvas.get_tk_widget().pack(side = TOP, fill = BOTH, expand=1)
 
