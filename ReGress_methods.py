@@ -4,9 +4,6 @@ class CombWidgets():
         self.ttk = ttk_arg
         self.hover_tip = hover_tip_arg
 
-        
-        
-
         self.window_and_textspace_style = {
             "panned_window_bg" : "#424242",
             "textspace_bg" : "#424242",
@@ -18,6 +15,11 @@ class CombWidgets():
             "selection_bg" : "#212121",
             "selection_text_color" : "#b0b0b0"
             }
+
+        self.ttk.Style().configure(
+            "labeledentry.TFrame",
+            background = "#212121"
+            )
 
 
     def create_menu_btn(self, frame_parent_arg, menu_value_arg, mbtn_text_display = "Select", hover_text = None, hover_delay_arg = 500):
@@ -276,6 +278,56 @@ class CombWidgets():
         widgets = {
             "parent_frame" : parent_frame,
             "string_var" : menu_label_string_var
+            }
+
+        return widgets
+
+
+    def create_compared_entries_menu(self, root_frame, frame_text_label, val1_label_text_arg, val2_label_text_arg):
+        # function to create two entry in one frame
+        # Mainly use for comparing 2  ex. From [ENTRY WIDGET] To [ENTRY WIDGET]
+
+        # Create a parent frame
+        # create two label widgets
+        # create two entry widdgets
+        # Grid every widgets in single row
+        # return the string var to aces entry values and the parent frame
+
+
+        frame_label = self.ttk.Label(text = frame_text_label)
+
+        parent_frame = self.ttk.LabelFrame(
+            root_frame,
+            labelwidget = frame_label,
+            style = "labeled_text_entry.TLabelframe"
+            )
+
+        val1_label = self.ttk.Label(
+            parent_frame,
+            text = val1_label_text_arg
+            )
+
+        val2_label = self.ttk.Label(
+            parent_frame,
+            text = val2_label_text_arg
+            )
+
+        entry_01_string_var = self.tk.StringVar()
+        entry_01 = self.ttk.Entry(parent_frame, textvariable = entry_01_string_var)
+
+        entry_02_string_var = self.tk.StringVar()
+        entry_02 = self.ttk.Entry(parent_frame, textvariable = entry_02_string_var)
+
+
+        val1_label.grid(row = 0, column = 0, sticky = "se", padx = 1)
+        entry_01.grid(row = 0, column = 1, sticky = "se", padx = 1)
+        val2_label.grid(row = 0, column = 2, sticky = "se", padx = 1)
+        entry_02.grid(row = 0, column = 3, sticky = "se", padx = 1)
+
+        widgets = {
+            "parent_frame" : parent_frame,
+            "string_var_01" : entry_01_string_var,
+            "string_var_02" : entry_02_string_var
             }
 
         return widgets

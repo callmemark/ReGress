@@ -1,7 +1,8 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\dist"
   ],
-  "SelectedNode": "\\README.md",
+  "SelectedNode": "\\ReGress.py",
   "PreviewInSolutionExplorer": false
 }
