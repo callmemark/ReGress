@@ -21,13 +21,35 @@ from pyprocessmacro import Process
 class MMREG_PROC():
     def __init__(self, df_arg, df_headers, x_vars, y_var):
         self.df = df_arg
+
+        self.xvars = x_vars
+        self.yvar = y_var
+
+        
         self.y_sample = self.df[y_var]
         self.x_sample = self.df[x_vars]
 
         self.selected_var = x_vars
         
-    def get_mmreg_prediction_plot(self, fit_intercept_arg, positive_coef_arg, njob_arg):
-        self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(self.x_sample, self.y_sample, test_size = 0.3, random_state = 0)
+
+    def get_mmreg_prediction_plot(self, fit_intercept_arg, positive_coef_arg, njob_arg, slice_index_from, slice_index_to):
+        df_copy = self.df.copy()
+
+        if slice_index_to != "" or slice_index_to != None:
+            if slice_index_from == "" or slice_index_from == None:
+                slice_index_from = 0
+            try:
+                df_copy = df_copy[int(slice_index_from) : int(slice_index_to)]
+            except:
+                print("cant convert added value")
+
+
+        x_sample = df_copy[self.xvars]
+        y_sample = df_copy[self.yvar]
+
+
+        self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(x_sample, y_sample, test_size = 0.3, random_state = 0)
+
 
         self.lr_model = LinearRegression(
             fit_intercept = fit_intercept_arg,
@@ -68,6 +90,11 @@ class MMREG_PROC():
         
         return reg_ressult
     
+
+
+
+
+
 
 
 
