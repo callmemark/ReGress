@@ -992,7 +992,7 @@ class ReGress():
         canvas.get_tk_widget().pack(side = TOP, fill = BOTH, expand=1)
 
         toolbar = NavigationToolbar2Tk(canvas, self.mmreg_res_plot_panel)
-        toolbar.config(background="#212121", foreground = self.font_color_white)
+        toolbar.config(background="#212121")
         toolbar.update()
         canvas.get_tk_widget().pack(side = TOP, fill = BOTH, expand=1)
 
