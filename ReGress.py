@@ -28,7 +28,6 @@ from tkinter.messagebox import showinfo
 import seaborn as sns
 from ttkthemes import ThemedTk
 
-
 from idlelib.tooltip import Hovertip
 
 
@@ -339,8 +338,11 @@ class ReGress():
         botton_notif_panel_frame = ttk.Frame(self.app, height = 70, width = self.main_ui_width, style = "header.TFrame") 
         botton_notif_panel_frame.pack(side = BOTTOM, fill = X)
 
-        samp = ttk.Label(botton_notif_panel_frame, text = "Notifiaction alert panel")
-        samp.grid(row = 1, column = 1, pady = 7)
+        notif_label = ttk.Label(botton_notif_panel_frame, text = "Notifiaction alert panel")
+        notif_label.grid(row = 1, column = 1, pady = 7)
+
+        notif_panel_update_manager = RgM.AppNotifHandle(notif_label, ttk)
+        notif_panel_update_manager.create_bnotif("N", "Application Starter : Please select dataset to start operations")
 
 
 
@@ -363,6 +365,9 @@ class ReGress():
             self.tool_menu_panel,
             width = self.tool_menu_frame_width
             )
+
+        scrollbar = ttk.Scrollbar(self.tool_submenu_widget_panel, orient='vertical')
+        scrollbar.pack()
 
         # tool_menu_varselect_panel Handles var selection
         self.tool_menu_varselect_panel = ttk.PanedWindow(

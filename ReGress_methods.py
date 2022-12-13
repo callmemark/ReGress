@@ -333,6 +333,26 @@ class CombWidgets():
         return widgets
 
 
+class AppNotifHandle():
+    def __init__(self, label_widget_arg, ttk, style_arg):
+        self.label_widget = label_widget_arg
+        self.ttk = ttk
+        self.style = style_arg
+
+
+    def create_bnotif(self, error_type_arg, text_arg):
+        if error_type_arg == "N":
+            self.label_widget.configure(text = text_arg, style = self.style)
+
+        elif error_type_arg == "W":
+            self.label_widget.configure(text = text_arg, style = self.style)
+
+        elif error_type_arg == "E":
+            self.label_widget.configure(text = text_arg, style = self.style)
+        
+
+
+
 
 class UndoRedoSys():
     def __init__(self, main_df, saving_steps = 5):
@@ -347,3 +367,4 @@ class UndoRedoSys():
 
     def redo_action(self):
         pass
+
