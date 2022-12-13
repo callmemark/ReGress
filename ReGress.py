@@ -124,7 +124,6 @@ class ReGress():
           )
 
 
-
         menubtn_theme_style = ttk.Style()
         menubtn_theme_style.configure(
             "TMenubutton",
@@ -341,8 +340,8 @@ class ReGress():
         notif_label = ttk.Label(botton_notif_panel_frame, text = "Notifiaction alert panel")
         notif_label.grid(row = 1, column = 1, pady = 7)
 
-        notif_panel_update_manager = RgM.AppNotifHandle(notif_label, ttk)
-        notif_panel_update_manager.create_bnotif("N", "Application Starter : Please select dataset to start operations")
+        self.notif_panel_update_manager = RgM.AppNotifHandle(notif_label, ttk)
+        self.notif_panel_update_manager.create_bnotif("N", "Application Started : Please select dataset to start operations")
 
 
 
@@ -772,21 +771,21 @@ class ReGress():
         if type(data_return) != type(None):
             # if opening new file reset user selected variable
             self.reg_x_axis.clear()
-
             # set the opened dataset to a variable
             self.dataset = data_return
-
             # create a copy of the dataset
             self.dataset_backup_copy = data_return.copy()
-
             # get the headers and convert to tuple then store in variable
             # this headers will be used for selecting in variable selection menu
             self.df_headers = tuple(self.dataset.columns)
             
             # update the table
             self.update_dataframe_editor_result_frame(self.dataset)
-
             self.update_variable_selection_frame()
+            self.notif_panel_update_manager.create_bnotif("N", "File opened succesfully")
+
+        elif type(data_return) == type(None):
+            self.notif_panel_update_manager.create_bnotif("W", "No file selected")
             
  
 
@@ -933,6 +932,7 @@ class ReGress():
 
     def MMREG_update_result_output_plot(self, fit_intercept_param, positive_coef_param, njob_param, stat_ouput_source, plot_title, plot_xaxis_label, plot_yaxis_label):
         # check variable valur
+
         if stat_ouput_source ==  "":
             stat_ouput_source = "StatModel"
 
@@ -1012,6 +1012,8 @@ class ReGress():
 
         self.MMREG_stat_res_text_space.insert("1.0", stat_res)
         self.MMREG_stat_res_text_space['state'] = 'disabled'
+
+        self.notif_panel_update_manager.create_bnotif("N", "Multiple Linear Regression Plot Refreshed")
         
 
 
