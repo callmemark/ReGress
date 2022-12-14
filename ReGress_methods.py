@@ -1,3 +1,5 @@
+import datetime 
+
 class CombWidgets(): 
     def __init__(self, tk_arg, ttk_arg, hover_tip_arg):
         self.tk = tk_arg
@@ -333,6 +335,26 @@ class CombWidgets():
         return widgets
 
 
+class AppNotifHandle():
+    def __init__(self, label_widget_arg, ttk):
+        self.label_widget = label_widget_arg
+        self.ttk = ttk
+
+
+    def create_bnotif(self, error_type_arg, text_arg):
+        display_text = str(datetime.datetime.now()) + " : " + text_arg
+        if error_type_arg == "N":
+            self.label_widget.configure(text = "NOTIFICATION : " + display_text)
+
+        elif error_type_arg == "W":
+            self.label_widget.configure(text = "WARNING : " + display_text)
+
+        elif error_type_arg == "E":
+            self.label_widget.configure(text = "ERROR : " + display_text)
+        
+
+
+
 
 class UndoRedoSys():
     def __init__(self, main_df, saving_steps = 5):
@@ -347,3 +369,4 @@ class UndoRedoSys():
 
     def redo_action(self):
         pass
+
