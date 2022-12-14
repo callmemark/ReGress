@@ -555,6 +555,11 @@ class ReGress():
 
 
 
+    def dataframe_editor_tool_menu_frame_width_changed(self, event):
+        new_width = event.width
+        self.df_editing_tool_menu_canvas.itemconfig(self.canvas_frame, width = new_width)
+
+
     def inti_dataframe_editor_tool_menu_frame(self):
         # This method handles UI for Dataframe manipulation
         
@@ -570,8 +575,8 @@ class ReGress():
         self.df_editing_tool_menu_frame = ttk.Frame(
             self.df_editing_tool_menu_canvas,
             height = self.main_ui_height, 
-            width = self.tool_menu_frame_width)
-
+            width = self.tool_menu_frame_width
+            )
 
 
         # create a basic widget group of confirmation button, Menu button and -
@@ -720,10 +725,12 @@ class ReGress():
 
         # Add the frame in the canvas
         v_scroll_bar.pack(side = RIGHT, fill = Y )
-        self.df_editing_tool_menu_canvas.create_window(0, 0, anchor = "nw", window = self.df_editing_tool_menu_frame)
+        self.canvas_frame = self.df_editing_tool_menu_canvas.create_window(0, 0, anchor = "nw", window = self.df_editing_tool_menu_frame)
         self.df_editing_tool_menu_canvas.update_idletasks()
         self.df_editing_tool_menu_canvas.configure(scrollregion = self.df_editing_tool_menu_canvas.bbox("all"),
                                                    yscrollcommand = v_scroll_bar.set)
+
+        self.df_editing_tool_menu_canvas.bind('<Configure>', self.dataframe_editor_tool_menu_frame_width_changed)
         
 
 
@@ -1164,13 +1171,11 @@ class ReGress():
             self.mpannel_vsblty_state["df_editor_frame"] = True 
             self.result_panel.add(self.df_table_result_panel)
             self.open_variable_selection_panel(True)
-            #self.tool_submenu_config_panel.add(self.df_editing_tool_menu_frame)
             self.tool_submenu_config_panel.add(self.df_editing_tool_menu_canvas)
         elif not action_state_open:
             self.mpannel_vsblty_state["df_editor_frame"] = False
             self.open_variable_selection_panel(False)
             self.result_panel.remove(self.df_table_result_panel)
-            #self.tool_submenu_config_panel.remove(self.df_editing_tool_menu_frame)
             self.tool_submenu_config_panel.remove(self.df_editing_tool_menu_canvas)
 
 
