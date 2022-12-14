@@ -217,30 +217,29 @@ class ReGress():
             )
         
 
-    def init_app(self):
-        self.init_tool_nav_frame()
-        self.init_main_activity_panel()
-        self.init_bottom_notif_panel_frame()
+    def InitApp(self):
+        self.InitToolNavFrame()
+        self.InitMainActivityPanel()
+        self.InitBottomNotifPanelFrame()
 
-        self.init_result_panel()
-        self.init_tool_menu_panel()
+        self.initResultPanel()
+        self.InitToolMenuPanel()
 
-        self.inti_dataframe_editor_tool_menu_frame()
-        self.init_dataframe_editor_result_frame()
+        self.InitDataFrameEditorMenuFrame()
+        self.InitDataFrameEditorResultPanel()
 
-        self.MMREG_result_frame()
-        self.init_MMREG_tool_menu_frame()
+        self.InitMMREGResultFrame()
+        self.InitMMREGToolMenuFrame()
 
-        self.init_correlation_matrix_tool_menu_frame()
-        self.init_correlation_matrix_result_frame()
+        self.InitCorellationMatrixToolMenuFrame()
+        self.InitCorrelationMatrixResultFrame()
 
-        self.init_logistic_reg_tool_menu_frame()
-        self.init_logistic_reg_result_frame()
+        self.InitLogisticRegToolMenuFrame()
+        self.InitLogisticRegResultFrame()
 
 
         
-
-    def init_tool_nav_frame(self):
+    def InitToolNavFrame(self):
         # create the header navigation panel
         # Child Widgets for this panel dont need to have own functions since chnages will be handled in this panel
         head_nav_frame = ttk.Frame(self.app, height = 40, width = self.main_ui_width, style = "header.TFrame") 
@@ -254,13 +253,13 @@ class ReGress():
             head_nav_frame, 
             text = "Open", 
             style = "nav_tool.TButton",
-            command = lambda: self.open_dataset(row_skip_inp_val.get()))
+            command = lambda: self.OpenDataset(row_skip_inp_val.get()))
 
         window_screen_full_screen_toggle_btn = ttk.Button(
             head_nav_frame,
             text = "Screen Toggle",
             style = "nav_tool.TButton",
-            command = lambda: self.toggle_screen_frame_size()
+            command = lambda: self.ToggleScreenFrameSize()
             )
 
 
@@ -271,7 +270,7 @@ class ReGress():
             head_nav_frame, 
             text = "DATAFRAME", 
             style = "nav_tool.TButton",
-            command = lambda: self.update_side_menu_view("df_editor_frame"))
+            command = lambda: self.UpdateSideMenuDisp("df_editor_frame"))
         Hovertip(file_manage_tab_btn,'Dataframe editor tab', hover_delay=500)
         
         # create a button in top navigation panel for multitple linear regression options
@@ -279,7 +278,7 @@ class ReGress():
             head_nav_frame, 
             text = "MMLINREG",
             style = "nav_tool.TButton",
-            command = lambda: self.update_side_menu_view("mmreg_frame"))
+            command = lambda: self.UpdateSideMenuDisp("mmreg_frame"))
         Hovertip(mmreg_tab_btn,'(Multiple) Linear Regression Analysis tab', hover_delay=500)
         
         # create a button in top navigation panel for creating a matrix relationship options
@@ -287,7 +286,7 @@ class ReGress():
             head_nav_frame, 
             text = "CMATRIX", 
             style = "nav_tool.TButton",
-            command = lambda: self.update_side_menu_view("corl_matrix_frame"))
+            command = lambda: self.UpdateSideMenuDisp("corl_matrix_frame"))
         Hovertip(matrix_tab_btn,'Correlational Matrix Analysis tab', hover_delay=500)
         
         # create a button in top navigation panel for mediator regression
@@ -295,7 +294,7 @@ class ReGress():
             head_nav_frame, 
             text = "LOGIREG", 
             style = "nav_tool.TButton",
-            command = lambda: self.update_side_menu_view("logistic_reg_frame"))
+            command = lambda: self.UpdateSideMenuDisp("logistic_reg_frame"))
         Hovertip(med_reg_tab_btn,'Logisitc Regression Analysis tab', hover_delay=500)
 
         btn_padx = 0.1
@@ -313,8 +312,7 @@ class ReGress():
         
 
 
-
-    def toggle_screen_frame_size(self):
+    def ToggleScreenFrameSize(self):
         if self.set_to_full_screen == False:
             self.app.attributes('-fullscreen', True) 
             self.set_to_full_screen = True
@@ -323,7 +321,8 @@ class ReGress():
             self.set_to_full_screen = False
 
 
-    def init_main_activity_panel(self):
+      
+    def InitMainActivityPanel(self):
         self.mact_panel = ttk.PanedWindow(
             self.app, orient = HORIZONTAL, 
             height = self.main_ui_height, 
@@ -333,7 +332,7 @@ class ReGress():
 
 
 
-    def init_bottom_notif_panel_frame(self):
+    def InitBottomNotifPanelFrame(self):
         # bottom panel where warning or error will be displayed
         botton_notif_panel_frame = ttk.Frame(self.app, height = 70, width = self.main_ui_width, style = "header.TFrame") 
         botton_notif_panel_frame.pack(side = BOTTOM, fill = X)
@@ -345,8 +344,8 @@ class ReGress():
         self.notif_panel_update_manager.create_bnotif("N", "Application Started : Please select dataset to start operations")
 
 
-
-    def init_tool_menu_panel(self):
+       
+    def InitToolMenuPanel(self):
         self.tool_menu_panel = ttk.PanedWindow(
             self.mact_panel, 
             orient = HORIZONTAL,
@@ -355,11 +354,11 @@ class ReGress():
             )
 
         self.mact_panel.add(self.tool_menu_panel)
-        self.init_menu_submenu_panel()
+        self.InitMenuSubMenuPanel()
 
 
-
-    def init_menu_submenu_panel(self):
+       
+    def InitMenuSubMenuPanel(self):
         # handles submenus widgets and panels
         self.tool_submenu_widget_panel = ttk.PanedWindow(
             self.tool_menu_panel,
@@ -384,7 +383,7 @@ class ReGress():
             width = self.tool_menu_frame_width
             )
 
-        self.init_var_selection_submenu_frame()
+        self.InitVarSelectSubMenuFrame()
 
         self.tool_submenu_widget_panel.pack(fill = BOTH)
         self.tool_submenu_widget_panel.add(self.tool_menu_varselect_panel)
@@ -392,7 +391,8 @@ class ReGress():
         self.tool_menu_panel.add(self.tool_submenu_widget_panel)
 
 
-    def init_var_selection_submenu_frame(self):
+        
+    def InitVarSelectSubMenuFrame(self):
         # handles UI for selecting variables for x and y axis for plotting and regression analysis
         # creat frame that will parent all widgets related to setting the x and y axis variable
         variable_selection_frame_label = ttk.Label(text = "Variable Selection") #style = "lfram_label_widg_dark.TLabel"
@@ -427,21 +427,21 @@ class ReGress():
         assign_col_btn = ttk.Button(
             x_var_selection_frame, 
             text = "Add to operation list", 
-            command = lambda: self.update_variable_selection_list(add = True, axis = "X", val = selected_var.get())
+            command = lambda: self.UpdateVarSelectionList(add = True, axis = "X", val = selected_var.get())
             )
 
         # button to unaassigning varible to the x axis
         unassign_col_btn = ttk.Button(
             x_var_selection_frame, 
             text = "Remove in operation list", 
-            command = lambda: self.update_variable_selection_list(add = False, axis = "X", val = selected_var.get())
+            command = lambda: self.UpdateVarSelectionList(add = False, axis = "X", val = selected_var.get())
             )
 
         # button to set y varibale value
         assign_y_axis_btn = ttk.Button(
             x_var_selection_frame,
             text = "Use Y axis",
-            command = lambda: self.update_variable_selection_list(add = True, axis = "Y", val = selected_var.get())
+            command = lambda: self.UpdateVarSelectionList(add = True, axis = "Y", val = selected_var.get())
             )
             
         # create frame to display selected variables in x axis
@@ -489,8 +489,7 @@ class ReGress():
 
 
 
-    # deprecated update_mmreg_xaxis renamed
-    def update_variable_selection_list(self, add = True, axis = "X", val = ""):
+    def UpdateVarSelectionList(self, add = True, axis = "X", val = ""):
         if axis == "X":
             if add and not(val in self.reg_x_axis) and val != "":
                 self.reg_x_axis.append(val)
@@ -498,14 +497,15 @@ class ReGress():
             elif not add and val in self.reg_x_axis and val != "":
                 self.reg_x_axis.remove(val)
 
-            self.refresh_xvariable_selection_list(self.df_headers)
+            self.RefreshXVarSelectionList(self.df_headers)
 
         elif axis == "Y":
             self.reg_y_axis = val
-            self.refresh_yvaribale_selection_list(self.df_headers)
+            self.RefreshYVarSelectionList(self.df_headers)
 
 
-    def refresh_xvariable_selection_list(self, df_headers_list_arg):
+
+    def RefreshXVarSelectionList(self, df_headers_list_arg):
         # Remove all the widgets in the sidplay frame to prevent widgets with same text value
         for widget in self.xaxis_var_disp_frame.winfo_children():
             widget.destroy()
@@ -516,22 +516,22 @@ class ReGress():
                 self.reg_x_axis.remove(old_head_val)
 
         # iterate through list reg_x_axis where x axis variable are stored and call 
-        # function create_new_label to add new label displaying varibale names in the frame
+        # function AddValueToVarList to add new label displaying varibale names in the frame
         for val in self.reg_x_axis:
-            self.create_new_label(val, "X")
+            self.AddValueToVarList(val, "X")
 
 
-
-    def refresh_yvaribale_selection_list(self, df_header_list_arg):
+ 
+    def RefreshYVarSelectionList(self, df_header_list_arg):
         for widget in self.yaxis_var_disp_frame.winfo_children():
                 widget.destroy()
 
         if self.reg_y_axis in df_header_list_arg:
-            self.create_new_label(self.reg_y_axis, "Y")
+            self.AddValueToVarList(self.reg_y_axis, "Y")
 
 
 
-    def create_new_label(self, text_param, axis):
+    def AddValueToVarList(self, text_param, axis):
         # add new label widgets 
         if axis == "X":
             if not(text_param == '') or not(text_param == None):
@@ -543,7 +543,8 @@ class ReGress():
                 new_label.pack(fill = X)
 
 
-    def init_result_panel(self):
+
+    def initResultPanel(self):
         # Result panle viewport is the viewport where the results of operation (i.e Tables, Plot, Stat result ) are displayed
         self.result_panel = ttk.PanedWindow(
             self.app, orient = HORIZONTAL, 
@@ -555,12 +556,7 @@ class ReGress():
 
 
 
-    def dataframe_editor_tool_menu_frame_width_changed(self, event):
-        new_width = event.width
-        self.df_editing_tool_menu_canvas.itemconfig(self.canvas_frame, width = new_width)
-
-
-    def inti_dataframe_editor_tool_menu_frame(self):
+    def InitDataFrameEditorMenuFrame(self):
         # This method handles UI for Dataframe manipulation
         
         # create canvas as parent 
@@ -594,7 +590,7 @@ class ReGress():
         apply_normalize_btn = ttk.Button(
             normalization_func_menu_frame, 
             text = "Apply Normalize",
-            command = lambda: self.update_dataframe_editor_result_frame(
+            command = lambda: self.UpdateDataFrameEditorResultFrame(
                 lgb.get_normalized_df(
                     max_abs_normalize_strvar.get(),
                     self.dataset,
@@ -607,7 +603,7 @@ class ReGress():
         drop_col_btn = ttk.Button(
             self.df_editing_tool_menu_frame,
             text = "Drop Selected Columns",
-            command = lambda: self.update_dataframe_editor_result_frame(
+            command = lambda: self.UpdateDataFrameEditorResultFrame(
                 lgb.DFOperation().drop_col(self.dataset, self.reg_x_axis)
                 )
             )
@@ -667,7 +663,7 @@ class ReGress():
         confirm_sort_rank_df_btn = ttk.Button(
             sort_rank_df_menu_frame, 
             text = "Confirm",
-            command = lambda: self.update_dataframe_editor_result_frame(
+            command = lambda: self.UpdateDataFrameEditorResultFrame(
                     lgb.sort_rank_df(sort_rank_df_menu_strvar.get(), self.dataset)
                 )
             )
@@ -677,7 +673,7 @@ class ReGress():
         fill_df_nanval_btn = ttk.Button(
             self.df_editing_tool_menu_frame,
             text = "Fill Nan value with 0",
-            command = lambda: self.update_dataframe_editor_result_frame(
+            command = lambda: self.UpdateDataFrameEditorResultFrame(
                 self.dataset.fillna(0)
                 )
             )
@@ -688,7 +684,7 @@ class ReGress():
             self.df_editing_tool_menu_frame,
             text = "Restore Original Dataset",
             style = "important.TButton",
-            command = lambda: self.update_dataframe_editor_result_frame(
+            command = lambda: self.UpdateDataFrameEditorResultFrame(
                 self.dataset_backup_copy
                 )
             )
@@ -699,7 +695,7 @@ class ReGress():
             self.df_editing_tool_menu_frame,
             text = "Refresh Changes",
             style = "important.TButton",
-            command = lambda: self.update_variable_selection_frame()
+            command = lambda: self.UpdateVarSelectionFrame()
             )
 
 
@@ -730,11 +726,18 @@ class ReGress():
         self.df_editing_tool_menu_canvas.configure(scrollregion = self.df_editing_tool_menu_canvas.bbox("all"),
                                                    yscrollcommand = v_scroll_bar.set)
 
-        self.df_editing_tool_menu_canvas.bind('<Configure>', self.dataframe_editor_tool_menu_frame_width_changed)
+        self.df_editing_tool_menu_canvas.bind('<Configure>', self.DataFrameEditorTollMenuFrameWithChanged)
         
 
+        
+    def DataFrameEditorTollMenuFrameWithChanged(self, event):
+        # Update dataframe_editor_tool_menu_frame width when the paned window changes
+        new_width = event.width
+        self.df_editing_tool_menu_canvas.itemconfig(self.canvas_frame, width = new_width)
 
-    def init_dataframe_editor_result_frame(self):
+
+ 
+    def InitDataFrameEditorResultPanel(self):
         # crete the Result viewport fot the data frame table
 
         new_df_table_result_frame = self.grouped_widgets.create_window_and_textspace_panel(
@@ -750,10 +753,10 @@ class ReGress():
 
 
 
-    def update_variable_selection_frame(self):
+    def UpdateVarSelectionFrame(self):
         # update the variable sectection frame
         # change frame to dataframe editinga frame
-        self.update_side_menu_view("df_editor_frame")
+        self.UpdateSideMenuDisp("df_editor_frame")
 
         # get the dataframe displayed in the table
         update_df = self.pt.model.df
@@ -767,15 +770,15 @@ class ReGress():
 
         # remove the variable select frame re initizlize and display again
         self.tool_menu_varselect_panel.remove(self.variable_selection_frame)
-        self.init_var_selection_submenu_frame()
+        self.InitVarSelectSubMenuFrame()
         self.tool_menu_varselect_panel.add(self.variable_selection_frame)
 
-        self.refresh_xvariable_selection_list(update_df.columns)
-        self.refresh_yvaribale_selection_list(update_df.columns)
+        self.RefreshXVarSelectionList(update_df.columns)
+        self.RefreshYVarSelectionList(update_df.columns)
 
 
-        
-    def update_dataframe_editor_result_frame(self, df):
+ 
+    def UpdateDataFrameEditorResultFrame(self, df):
         # ouput the tabulated display of the dataframe
         self.dataset = df
         
@@ -785,11 +788,11 @@ class ReGress():
        
         self.pt.show()
         
-        self.update_variable_selection_frame()
+        self.UpdateVarSelectionFrame()
         
 
-
-    def open_dataset(self, row_skip):
+ 
+    def OpenDataset(self, row_skip):
         data_return = lgb.FileSys().open_dataset_by_file(row_skip)
 
         if type(data_return) != type(None):
@@ -804,16 +807,16 @@ class ReGress():
             self.df_headers = tuple(self.dataset.columns)
             
             # update the table
-            self.update_dataframe_editor_result_frame(self.dataset)
-            self.update_variable_selection_frame()
+            self.UpdateDataFrameEditorResultFrame(self.dataset)
+            self.UpdateVarSelectionFrame()
             self.notif_panel_update_manager.create_bnotif("N", "File opened succesfully")
 
         elif type(data_return) == type(None):
             self.notif_panel_update_manager.create_bnotif("W", "No file selected")
             
  
-
-    def init_MMREG_tool_menu_frame(self):
+ 
+    def InitMMREGToolMenuFrame(self):
         # create the main frame or a root frame of the tool menu for multiple linear regresssion
         mmreg_frame_label = ttk.Label(text="Multiple Linear Regression")
         self.mmreg_tool_menu_submenu_frame = ttk.Labelframe(
@@ -903,16 +906,12 @@ class ReGress():
         mmreg_plot_ylabel_string_var = new_mmreg_plot_ylabel_menu["string_var"]
 
 
-
-
-
-
         # Button that update the Multiple linear regression plot and stat result
         diplay_plot_btn = ttk.Button(
             self.mmreg_tool_menu_submenu_frame, 
             text = "Refresh Plot Output", 
             style = "important.TButton",
-            command = lambda: self.MMREG_update_result_output_plot(
+            command = lambda: self.MMREGUpdateResultOutputPlot(
                 fit_intercept_param = fit_intcept_param_strvar.get(),
                 positive_coef_param = positive_coef_mmreg_param_strvar.get(),
                 njob_param = njob_param_strvar.get(),
@@ -921,8 +920,6 @@ class ReGress():
                 plot_xaxis_label = mmreg_plot_xlabel_string_var.get(),
                 plot_yaxis_label = mmreg_plot_ylabel_string_var.get()
                 ))
-
-
 
 
         # mmreg_tool_menu_submenu_frame grid layout
@@ -939,7 +936,7 @@ class ReGress():
         
 
 
-    def MMREG_result_frame(self):
+    def InitMMREGResultFrame(self):
         ## Multiple Linear regression result frame ##
         new_mmreg_result_multiPanels = self.grouped_widgets.create_window_and_textspace_panel(
             parent_root_frame = self.result_panel, 
@@ -954,7 +951,7 @@ class ReGress():
         
 
 
-    def MMREG_update_result_output_plot(self, fit_intercept_param, positive_coef_param, njob_param, stat_ouput_source, plot_title, plot_xaxis_label, plot_yaxis_label):
+    def MMREGUpdateResultOutputPlot(self, fit_intercept_param, positive_coef_param, njob_param, stat_ouput_source, plot_title, plot_xaxis_label, plot_yaxis_label):
         # check variable valur
 
         if stat_ouput_source ==  "":
@@ -1040,8 +1037,8 @@ class ReGress():
         self.notif_panel_update_manager.create_bnotif("N", "Multiple Linear Regression Plot refreshed")
         
 
-
-    def init_correlation_matrix_tool_menu_frame(self):
+   
+    def InitCorellationMatrixToolMenuFrame(self):
         corl_matrix_frame_label = ttk.Label(text="Correlation Matix")
         self.corl_matrix_menu_submenu_frame = ttk.Labelframe(
             self.tool_submenu_config_panel,
@@ -1057,12 +1054,13 @@ class ReGress():
             self.corl_matrix_menu_submenu_frame, 
             text = "Refresh Correlation Matrix Output",
             style = "important.TButton",
-            command = lambda: self.update_correlation_matrix_result_frame())
+            command = lambda: self.UpdateCorrelationMatrixResultFrame())
         
         refresh_corl_maatrix_plot.pack(fill = X, padx = self.tool_menu_padx, pady = self.tool_menu_pady, ipady = self.btn_height)
 
 
-    def init_correlation_matrix_result_frame(self):
+   
+    def InitCorrelationMatrixResultFrame(self):
         new_corl_matrix_result_multiPanels = self.grouped_widgets.create_window_and_textspace_panel(
             parent_root_frame = self.result_panel, 
             height_arg = self.main_ui_height, 
@@ -1074,8 +1072,8 @@ class ReGress():
         self.corl_text_output_disp_widget = new_corl_matrix_result_multiPanels["text_output_display"]
 
 
-
-    def update_correlation_matrix_result_frame(self):
+ 
+    def UpdateCorrelationMatrixResultFrame(self):
         for widget in self.corl_matrix_plotting_panel.winfo_children():
             widget.destroy()
 
@@ -1097,8 +1095,8 @@ class ReGress():
         canvas.get_tk_widget().pack(side = TOP, fill = BOTH, expand=1)
 
         
-
-    def init_logistic_reg_tool_menu_frame(self):
+ 
+    def InitLogisticRegToolMenuFrame(self):
         logistic_reg_frame_label = ttk.Label(text="Logistic Regression")
         self.logistic_reg_menu_submenu_frame = ttk.Labelframe(
             self.tool_submenu_config_panel,
@@ -1113,12 +1111,13 @@ class ReGress():
             self.logistic_reg_menu_submenu_frame, 
             text = "Refresh Logistic Regression Output",
             style = "important.TButton",
-            command = lambda: self.update_logistic_reg_result_frame())
+            command = lambda: self.UpdateLogisticRegResultFrame())
         
         refresh_logistic_reg_plot.pack(fill = X, padx = self.tool_menu_padx, pady = self.tool_menu_pady, ipady = self.btn_height)
     
 
-    def init_logistic_reg_result_frame(self):
+  
+    def InitLogisticRegResultFrame(self):
         new_logistic_reg_result_multiPanels = self.grouped_widgets.create_window_and_textspace_panel(
             parent_root_frame = self.result_panel, 
             height_arg = self.main_ui_height, 
@@ -1130,7 +1129,8 @@ class ReGress():
         self.logistic_reg_output_disp_widget = new_logistic_reg_result_multiPanels["text_output_display"]
     
 
-    def update_logistic_reg_result_frame(self):
+
+    def UpdateLogisticRegResultFrame(self):
         for widget in self.logistic_reg_plotting_panel.winfo_children():
             widget.destroy()
 
@@ -1158,70 +1158,72 @@ class ReGress():
 
 
 
-    def open_variable_selection_panel(self, call_state_open = bool):
+    def OpenVariableSelectionPanel(self, call_state_open = bool):
         if call_state_open:
             self.tool_menu_varselect_panel.add(self.variable_selection_frame)
         elif not call_state_open:
             self.tool_menu_varselect_panel.remove(self.variable_selection_frame)
             
 
-    def open_dataframe_frame(self, action_state_open = bool):
+
+    def OpenDataFrameEditorFrame(self, action_state_open = bool):
         #self.df_editing_tool_menu_canva
         if action_state_open:
             self.mpannel_vsblty_state["df_editor_frame"] = True 
             self.result_panel.add(self.df_table_result_panel)
-            self.open_variable_selection_panel(True)
+            self.OpenVariableSelectionPanel(True)
             self.tool_submenu_config_panel.add(self.df_editing_tool_menu_canvas)
         elif not action_state_open:
             self.mpannel_vsblty_state["df_editor_frame"] = False
-            self.open_variable_selection_panel(False)
+            self.OpenVariableSelectionPanel(False)
             self.result_panel.remove(self.df_table_result_panel)
             self.tool_submenu_config_panel.remove(self.df_editing_tool_menu_canvas)
 
 
-
-    def open_mmreg_frame(self, action_state_open = bool):
+            
+    def OpenMMREGFrame(self, action_state_open = bool):
         if action_state_open:
             self.mpannel_vsblty_state["mmreg_frame"] = True
-            self.open_variable_selection_panel(True)
+            self.OpenVariableSelectionPanel(True)
             self.result_panel.add(self.mmreg_result_panel)
             self.tool_submenu_config_panel.add(self.mmreg_tool_menu_submenu_frame)
         elif not action_state_open:
             self.mpannel_vsblty_state["mmreg_frame"] = False
-            self.open_variable_selection_panel(False)
+            self.OpenVariableSelectionPanel(False)
             self.result_panel.remove(self.mmreg_result_panel)
             self.tool_submenu_config_panel.remove(self.mmreg_tool_menu_submenu_frame)
 
 
-    def open_corl_matrix_frame(self, action_state_open = bool):
+
+    def OpenCorrelMatrixFrame(self, action_state_open = bool):
         if action_state_open:
             self.mpannel_vsblty_state["corl_matrix_frame"] = True
-            self.open_variable_selection_panel(True)
+            self.OpenVariableSelectionPanel(True)
             self.result_panel.add(self.corl_matrix_result_panel)
             self.tool_submenu_config_panel.add(self.corl_matrix_menu_submenu_frame)
         elif not action_state_open:
             self.mpannel_vsblty_state["corl_matrix_frame"] = False
-            self.open_variable_selection_panel(False)
+            self.OpenVariableSelectionPanel(False)
             self.result_panel.remove(self.corl_matrix_result_panel)
             self.tool_submenu_config_panel.remove(self.corl_matrix_menu_submenu_frame)
 
 
-    def open_logistic_reg_frame(self, action_state_open = bool):
+      
+    def OpenLogisticRegFrame(self, action_state_open = bool):
         if action_state_open:
             self.mpannel_vsblty_state["logistic_reg_frame"] = True
-            self.open_variable_selection_panel(True)
+            self.OpenVariableSelectionPanel(True)
             self.result_panel.add(self.logistic_reg_result_panel)
             self.tool_submenu_config_panel.add(self.logistic_reg_menu_submenu_frame)
         elif not action_state_open:
             self.mpannel_vsblty_state["logistic_reg_frame"] = False
-            self.open_variable_selection_panel(False)
+            self.OpenVariableSelectionPanel(False)
             self.result_panel.remove(self.logistic_reg_result_panel)
             self.tool_submenu_config_panel.remove(self.logistic_reg_menu_submenu_frame)
 
     
 
-
-    def update_side_menu_view(self, btn_click_arg):
+    def UpdateSideMenuDisp(self, btn_click_arg):
         # This funtion handles what to hide and shown  in side menu frame
         # This function is called by nav button in head selection panel
         # btn_click_arg is a string to determine what frame shoud be shown
@@ -1239,39 +1241,39 @@ class ReGress():
             # remove all frame / widgets related to the frame that is not visible
             for frame in frames_key:
                 if frame == "df_editor_frame" and self.mpannel_vsblty_state[frame] == True and btn_click_arg != "df_editor_frame":
-                    self.open_dataframe_frame(False)
+                    self.OpenDataFrameEditorFrame(False)
                 
                 if frame == "mmreg_frame" and self.mpannel_vsblty_state[frame] == True and btn_click_arg != "mmreg_frame":
-                    self.open_mmreg_frame(False)
+                    self.OpenMMREGFrame(False)
 
                 if frame == "corl_matrix_frame" and self.mpannel_vsblty_state[frame] == True and btn_click_arg != "corl_matrix_frame":
-                    self.open_corl_matrix_frame(False)
+                    self.OpenCorrelMatrixFrame(False)
             
                 if frame == "logistic_reg_frame" and self.mpannel_vsblty_state[frame] == True and btn_click_arg != "logistic_reg_frame":
-                    self.open_logistic_reg_frame(False)
+                    self.OpenLogisticRegFrame(False)
 
 
             # handle if frame is shown already, if not Show
             if btn_click_arg == "df_editor_frame" and self.mpannel_vsblty_state["df_editor_frame"] == False:
-                self.open_dataframe_frame(True)
+                self.OpenDataFrameEditorFrame(True)
 
             elif btn_click_arg == "mmreg_frame" and self.mpannel_vsblty_state["mmreg_frame"] == False:
-                self.open_mmreg_frame(True)
+                self.OpenMMREGFrame(True)
 
             elif btn_click_arg == "corl_matrix_frame" and self.mpannel_vsblty_state["corl_matrix_frame"] == False:
-                self.open_corl_matrix_frame(True)
+                self.OpenCorrelMatrixFrame(True)
 
             elif btn_click_arg == "logistic_reg_frame" and self.mpannel_vsblty_state["logistic_reg_frame"] == False:
-                self.open_logistic_reg_frame(True)
+                self.OpenLogisticRegFrame(True)
 
                 
             
-def main():
+def Main():
     app = ThemedTk(theme="black")
     app_UI = ReGress(app)
-    app_UI.init_app()
+    app_UI.InitApp()
     app.mainloop()
 
 
 if __name__ == "__main__":
-    main()
+    Main()
