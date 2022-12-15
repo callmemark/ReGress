@@ -169,7 +169,6 @@ class ReGress():
             background = "#595959",
             )
 
-
         nav_tool_btn_style = ttk.Style()
         nav_tool_btn_style.configure(
             "nav_tool.TButton",
@@ -365,8 +364,6 @@ class ReGress():
             width = self.tool_menu_frame_width
             )
 
-        scrollbar = ttk.Scrollbar(self.tool_submenu_widget_panel, orient='vertical')
-        scrollbar.pack()
 
         # tool_menu_varselect_panel Handles var selection
         self.tool_menu_varselect_panel = ttk.PanedWindow(
@@ -382,6 +379,19 @@ class ReGress():
             orient = HORIZONTAL,
             width = self.tool_menu_frame_width
             )
+
+
+
+        
+        self.tool_menu_canvas = tk.Canvas(self.tool_submenu_config_panel, background = self.main_accent_color)
+        
+        # create scrollbar df_editor_tool_menu_scroll_bar
+        self.tool_menu_scroll_bar = ttk.Scrollbar(self.tool_submenu_config_panel, 
+                                     command = self.tool_menu_canvas.yview,
+                                     orient = "vertical")
+
+        self.tool_menu_scroll_bar.pack(side = RIGHT, fill = Y )
+
 
         self.InitVarSelectSubMenuFrame()
 
@@ -558,18 +568,9 @@ class ReGress():
 
     def InitDataFrameEditorMenuFrame(self):
         # This method handles UI for Dataframe manipulation
-        
-        # create canvas as parent 
-        self.df_editing_tool_menu_canvas = tk.Canvas(self.tool_submenu_config_panel)
-        
-        # create scrollbar
-        v_scroll_bar = ttk.Scrollbar(self.tool_submenu_config_panel, 
-                                     command = self.df_editing_tool_menu_canvas.yview,
-                                     orient = "vertical")
-        
-        # create frame where the widgets will be added
+
         self.df_editing_tool_menu_frame = ttk.Frame(
-            self.df_editing_tool_menu_canvas,
+            self.tool_menu_canvas,
             height = self.main_ui_height, 
             width = self.tool_menu_frame_width
             )
@@ -577,9 +578,9 @@ class ReGress():
 
         # create a basic widget group of confirmation button, Menu button and -
         # a lable for selecting normalization functions
-        new_normalization_func_menu = self.grouped_widgets.create_basic_label_menu_options( 
+        new_normalization_func_menu = self.grouped_widgets.create_basic_label_menu_options(
             style_arg = 'tool_lframe.TFrame', 
-            frame_parent_arg = self.df_editing_tool_menu_frame, 
+            frame_parent_arg = self.df_editing_tool_menu_frame,
             label_txt_label = "Normalization Methods", 
             btn_text_label = "Not Normalized", 
             menu_value_arg = ["Not Normalized", "max abs scaling", "min max scaling", "z-score scaling"]
@@ -719,21 +720,14 @@ class ReGress():
         refresh_data_frame_btn.pack(side = BOTTOM, fill = X, pady = self.tool_menu_pady, ipady = 4)
       
 
-        # Add the frame in the canvas
-        v_scroll_bar.pack(side = RIGHT, fill = Y )
-        self.canvas_frame = self.df_editing_tool_menu_canvas.create_window(0, 0, anchor = "nw", window = self.df_editing_tool_menu_frame)
-        self.df_editing_tool_menu_canvas.update_idletasks()
-        self.df_editing_tool_menu_canvas.configure(scrollregion = self.df_editing_tool_menu_canvas.bbox("all"),
-                                                   yscrollcommand = v_scroll_bar.set)
-
-        self.df_editing_tool_menu_canvas.bind('<Configure>', self.DataFrameEditorTollMenuFrameWithChanged)
-        
 
         
-    def DataFrameEditorTollMenuFrameWithChanged(self, event):
+        
+    def updateToolMenuFrameWidth(self, event):
         # Update dataframe_editor_tool_menu_frame width when the paned window changes
+        btns_to_slidebar_margin = 20
         new_width = event.width
-        self.df_editing_tool_menu_canvas.itemconfig(self.canvas_frame, width = new_width)
+        self.tool_menu_canvas.itemconfig(self.canvas_frame, width = new_width - btns_to_slidebar_margin)
 
 
  
@@ -819,9 +813,8 @@ class ReGress():
     def InitMMREGToolMenuFrame(self):
         # create the main frame or a root frame of the tool menu for multiple linear regresssion
         mmreg_frame_label = ttk.Label(text="Multiple Linear Regression")
-        self.mmreg_tool_menu_submenu_frame = ttk.Labelframe(
-            self.tool_submenu_config_panel,
-            labelwidget = mmreg_frame_label,
+        self.mmreg_tool_menu_submenu_frame = ttk.Frame(
+            self.tool_menu_canvas,
             padding = 1,
             height = self.main_ui_height,
             width = self.tool_menu_frame_width,
@@ -1172,12 +1165,15 @@ class ReGress():
             self.mpannel_vsblty_state["df_editor_frame"] = True 
             self.result_panel.add(self.df_table_result_panel)
             self.OpenVariableSelectionPanel(True)
-            self.tool_submenu_config_panel.add(self.df_editing_tool_menu_canvas)
+            self.tool_submenu_config_panel.add(self.tool_menu_canvas)
+            self.canvas_frame = self.tool_menu_canvas.create_window(0, 0, anchor = "nw", window = self.df_editing_tool_menu_frame)
         elif not action_state_open:
             self.mpannel_vsblty_state["df_editor_frame"] = False
             self.OpenVariableSelectionPanel(False)
             self.result_panel.remove(self.df_table_result_panel)
-            self.tool_submenu_config_panel.remove(self.df_editing_tool_menu_canvas)
+            self.tool_submenu_config_panel.remove(self.tool_menu_canvas)
+            self.tool_menu_canvas.delete("all")
+            
 
 
             
@@ -1186,12 +1182,14 @@ class ReGress():
             self.mpannel_vsblty_state["mmreg_frame"] = True
             self.OpenVariableSelectionPanel(True)
             self.result_panel.add(self.mmreg_result_panel)
-            self.tool_submenu_config_panel.add(self.mmreg_tool_menu_submenu_frame)
+            self.tool_submenu_config_panel.add(self.tool_menu_canvas)
+            self.canvas_frame = self.tool_menu_canvas.create_window(0, 0, anchor = "nw", window = self.mmreg_tool_menu_submenu_frame)
         elif not action_state_open:
             self.mpannel_vsblty_state["mmreg_frame"] = False
             self.OpenVariableSelectionPanel(False)
             self.result_panel.remove(self.mmreg_result_panel)
-            self.tool_submenu_config_panel.remove(self.mmreg_tool_menu_submenu_frame)
+            self.tool_submenu_config_panel.remove(self.tool_menu_canvas)
+            self.tool_menu_canvas.delete("all")
 
 
 
@@ -1236,7 +1234,7 @@ class ReGress():
         elif type(self.dataset) != type(None):
             # get the keys of the frame state
             frames_key = self.mpannel_vsblty_state.keys()
-
+            
             # loop through the dictionary for open frame and hide it
             # remove all frame / widgets related to the frame that is not visible
             for frame in frames_key:
@@ -1265,6 +1263,12 @@ class ReGress():
 
             elif btn_click_arg == "logistic_reg_frame" and self.mpannel_vsblty_state["logistic_reg_frame"] == False:
                 self.OpenLogisticRegFrame(True)
+
+
+            self.tool_menu_canvas.update_idletasks()
+            self.tool_menu_canvas.configure(scrollregion = self.tool_menu_canvas.bbox("all"),
+                                                    yscrollcommand = self.tool_menu_scroll_bar.set)
+            self.tool_menu_canvas.bind('<Configure>', self.updateToolMenuFrameWidth)
 
                 
             
