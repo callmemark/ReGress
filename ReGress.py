@@ -372,14 +372,18 @@ class ReGress():
 
        
     def InitToolMenuPanel(self):
-        self.tool_menu_panel = ttk.PanedWindow(
+        # deprecated name tool_menu_panel changed to side_bar_panel Da
+        #
+        # side_bar_parent_panel holds different panel where tools are used to manipulate the results -
+        #   shown in the result panel
+        self.side_bar_panel = ttk.PanedWindow(
             self.mact_panel, 
             orient = HORIZONTAL,
             height = self.main_ui_height,
             width = self.tool_menu_frame_width
             )
 
-        self.mact_panel.add(self.tool_menu_panel)
+        self.mact_panel.add(self.side_bar_panel)
         self.InitMenuSubMenuPanel()
 
 
@@ -387,10 +391,9 @@ class ReGress():
     def InitMenuSubMenuPanel(self):
         # handles submenus widgets and panels
         self.tool_submenu_widget_panel = ttk.PanedWindow(
-            self.tool_menu_panel,
+            self.side_bar_panel,
             width = self.tool_menu_frame_width
             )
-
 
         # tool_menu_varselect_panel Handles var selection
         self.tool_menu_varselect_panel = ttk.PanedWindow(
@@ -400,7 +403,7 @@ class ReGress():
             width = self.tool_menu_frame_width
             )
 
-        # tool_submenu_config_panel handles the widgets for manipulating the behaviour of the regression
+        # tool_submenu_config_panel 
         self.tool_submenu_config_panel = ttk.PanedWindow(
             self.tool_submenu_widget_panel,
             orient = HORIZONTAL,
@@ -416,13 +419,12 @@ class ReGress():
 
         self.tool_menu_scroll_bar.pack(side = RIGHT, fill = Y )
 
-
         self.InitVarSelectSubMenuFrame()
 
         self.tool_submenu_widget_panel.pack(fill = BOTH)
         self.tool_submenu_widget_panel.add(self.tool_menu_varselect_panel)
         self.tool_submenu_widget_panel.add(self.tool_submenu_config_panel)
-        self.tool_menu_panel.add(self.tool_submenu_widget_panel)
+        self.side_bar_panel.add(self.tool_submenu_widget_panel)
 
 
         
