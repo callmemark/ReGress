@@ -390,14 +390,15 @@ class ReGress():
        
     def InitMenuSubMenuPanel(self):
         # handles submenus widgets and panels
-        self.tool_submenu_widget_panel = ttk.PanedWindow(
+        # deprecated variable name from tool_submenu_widget_panel into side_bar_subpanel_parent_panel
+        self.side_bar_subpanel_parent_panel = ttk.PanedWindow(
             self.side_bar_panel,
             width = self.tool_menu_frame_width
             )
 
         # tool_menu_varselect_panel Handles var selection
         self.tool_menu_varselect_panel = ttk.PanedWindow(
-            self.tool_submenu_widget_panel,
+            self.side_bar_subpanel_parent_panel,
             orient = HORIZONTAL,
             height = 150,
             width = self.tool_menu_frame_width
@@ -405,7 +406,7 @@ class ReGress():
 
         # tool_submenu_config_panel 
         self.tool_submenu_config_panel = ttk.PanedWindow(
-            self.tool_submenu_widget_panel,
+            self.side_bar_subpanel_parent_panel,
             orient = HORIZONTAL,
             width = self.tool_menu_frame_width
             )
@@ -421,10 +422,10 @@ class ReGress():
 
         self.InitVarSelectSubMenuFrame()
 
-        self.tool_submenu_widget_panel.pack(fill = BOTH)
-        self.tool_submenu_widget_panel.add(self.tool_menu_varselect_panel)
-        self.tool_submenu_widget_panel.add(self.tool_submenu_config_panel)
-        self.side_bar_panel.add(self.tool_submenu_widget_panel)
+        self.side_bar_subpanel_parent_panel.pack(fill = BOTH)
+        self.side_bar_subpanel_parent_panel.add(self.tool_menu_varselect_panel)
+        self.side_bar_subpanel_parent_panel.add(self.tool_submenu_config_panel)
+        self.side_bar_panel.add(self.side_bar_subpanel_parent_panel)
 
 
         
