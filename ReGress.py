@@ -71,7 +71,9 @@ class ReGress():
         self.main_accent_color = "#212121"
         self.secondary_accent_color = "#4b4b4b"
         self.important_color = "#ffc400"
-        
+
+        self.orange_theme_color = "#fcba03"
+        self.redorange_theme_color = "#fc4c00"
 
         # plot styling
         sns.set(rc={
@@ -116,6 +118,31 @@ class ReGress():
             pady = self.tool_menu_pady,
             padx = 4
             )
+        
+        orange_them_btn = ttk.Style()
+        orange_them_btn.map("orange_btntheme.TButton",
+            foreground=[
+                ('!active', self.main_accent_color),
+                ('pressed', self.main_accent_color), 
+                ('active', self.main_accent_color)],
+            background=[ 
+                ('!active', self.orange_theme_color),
+                ('pressed', self.orange_theme_color), 
+                ('active', self.orange_theme_color)]
+          )
+
+        redorange_them_btn = ttk.Style()
+        redorange_them_btn.map("redorange_btntheme.TButton",
+            foreground=[
+                ('!active', self.main_accent_color),
+                ('pressed', self.main_accent_color), 
+                ('active', self.main_accent_color)],
+            background=[ 
+                ('!active', self.redorange_theme_color),
+                ('pressed', self.redorange_theme_color), 
+                ('active', self.redorange_theme_color)]
+          )
+
 
 
         importtant_btn_style = ttk.Style()
@@ -380,9 +407,6 @@ class ReGress():
             width = self.tool_menu_frame_width
             )
 
-
-
-        
         self.tool_menu_canvas = tk.Canvas(self.tool_submenu_config_panel, background = self.main_accent_color)
         
         # create scrollbar df_editor_tool_menu_scroll_bar
@@ -436,14 +460,16 @@ class ReGress():
         # button assigning varible to the x axis
         assign_col_btn = ttk.Button(
             x_var_selection_frame, 
-            text = "Add to operation list", 
+            text = "Add to operation list",
+            style = "orange_btntheme.TButton",
             command = lambda: self.UpdateVarSelectionList(add = True, axis = "X", val = selected_var.get())
             )
 
         # button to unaassigning varible to the x axis
         unassign_col_btn = ttk.Button(
             x_var_selection_frame, 
-            text = "Remove in operation list", 
+            text = "Remove in operation list",
+            style = "redorange_btntheme.TButton",
             command = lambda: self.UpdateVarSelectionList(add = False, axis = "X", val = selected_var.get())
             )
 
@@ -451,6 +477,7 @@ class ReGress():
         assign_y_axis_btn = ttk.Button(
             x_var_selection_frame,
             text = "Use Y axis",
+            style = "orange_btntheme.TButton",
             command = lambda: self.UpdateVarSelectionList(add = True, axis = "Y", val = selected_var.get())
             )
             
