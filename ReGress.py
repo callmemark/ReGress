@@ -220,6 +220,7 @@ class ReGress():
             background = self.main_accent_color
             )
 
+
         header_frame_style = ttk.Style()
         header_frame_style.configure(
             "header.TFrame",
@@ -227,6 +228,7 @@ class ReGress():
             pady = 7
             )
         
+
         tool_lframe_custom_theme = ttk.Style()
         tool_lframe_custom_theme.configure(
             'tool_lframe.TLabelframe',
@@ -234,6 +236,7 @@ class ReGress():
             background = self.main_accent_color,
             bordercolor = self.main_accent_color
             )
+
 
         tool_lframe_custom_theme = ttk.Style()
         tool_lframe_custom_theme.configure(
@@ -473,6 +476,7 @@ class ReGress():
             )
         
 
+
         # Create a menu button listing all the variables in the dataframe
         new_x_axis_col_slctn_menu_btn = self.grouped_widgets.create_menu_btn(
             frame_parent_arg = operation_var_container_panel, 
@@ -482,6 +486,9 @@ class ReGress():
 
         selected_var = new_x_axis_col_slctn_menu_btn["string_var"]
         x_axis_col_slctn_btn = new_x_axis_col_slctn_menu_btn["menu_button"]
+
+        
+        
 
 
         # button assigning varible to the x axis
@@ -500,20 +507,39 @@ class ReGress():
             command = lambda: self.UpdateVarSelectionList(add = False, axis = "X", val = selected_var.get())
             )
 
+        x_axis_selected_list_label = ttk.Label(
+            operation_var_container_panel,
+            text = "X-Axis / Operation variable: "
+            )
+
         # create frame to display selected variables in x axis
         self.xaxis_var_disp_frame = ttk.Frame(
             operation_var_container_panel,
             style = "nav_tool.TLabelframe.Label"
             )
 
+        # Drop down menu to select variables
+        new_y_axis_col_slctn_menu_btn = self.grouped_widgets.create_menu_btn(
+            frame_parent_arg = key_var_container_panel, 
+            mbtn_text_display = "Variables",
+            menu_value_arg = self.df_headers
+            )
+
+        selected_yaxis_var = new_y_axis_col_slctn_menu_btn["string_var"]
+        y_axis_col_slctn_btn = new_y_axis_col_slctn_menu_btn["menu_button"]
+
         # button to set y varibale value
         assign_y_axis_btn = ttk.Button(
             key_var_container_panel,
             text = "Use Y axis",
             style = "orange_btntheme.TButton",
-            command = lambda: self.UpdateVarSelectionList(add = True, axis = "Y", val = selected_var.get())
+            command = lambda: self.UpdateVarSelectionList(add = True, axis = "Y", val = selected_yaxis_var.get())
             )
         
+        y_axis_selected_var_list_label = ttk.Label(
+            key_var_container_panel, 
+            text = "Y-Axis / Primary key: "
+            )
 
         # create frame to display selected variables in y axis
         self.yaxis_var_disp_frame = ttk.Frame(
@@ -543,9 +569,14 @@ class ReGress():
         x_axis_col_slctn_btn.pack(fill = X, pady = self.tool_menu_pady)
         assign_col_btn.pack(fill = X, pady = self.tool_menu_pady)
         unassign_col_btn.pack(fill = X, pady = self.tool_menu_pady)
-        assign_y_axis_btn.pack(fill = X, pady = self.tool_menu_pady)
+        x_axis_selected_list_label.pack(fill = X, pady = self.tool_menu_pady)
         self.xaxis_var_disp_frame.pack(fill = X, pady = self.tool_menu_pady)
+
+        y_axis_col_slctn_btn.pack(fill = X, pady = self.tool_menu_pady)
+        assign_y_axis_btn.pack(fill = X, pady = self.tool_menu_pady)
+        y_axis_selected_var_list_label.pack(fill = X, pady = self.tool_menu_pady)
         self.yaxis_var_disp_frame.pack(fill = X, pady = self.tool_menu_pady)
+
         df_row_slice_selection_frame.pack(fill = X, pady = self.tool_menu_pady)
 
 
