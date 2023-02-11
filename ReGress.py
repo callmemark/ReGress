@@ -1133,16 +1133,11 @@ class ReGress():
 
    
     def InitCorellationMatrixToolMenuFrame(self):
-        corl_matrix_frame_label = ttk.Label(text="Correlation Matix")
-        self.corl_matrix_menu_submenu_frame = ttk.Labelframe(
-            self.tool_submenu_config_panel,
-            labelwidget = corl_matrix_frame_label,
-            padding = 1,
+        self.corl_matrix_menu_submenu_frame = ttk.Frame(
+            self.tool_menu_canvas,
             height = self.main_ui_height,
-            width = self.tool_menu_frame_width,
-            #style = 'tool_lframe.TLabelframe'
+            width = self.tool_menu_frame_width
             )
-
 
         refresh_corl_maatrix_plot = ttk.Button(
             self.corl_matrix_menu_submenu_frame, 
@@ -1298,10 +1293,12 @@ class ReGress():
             self.mpannel_vsblty_state["corl_matrix_frame"] = True
             self.OpenVariableSelectionPanel(True)
             self.result_panel.add(self.corl_matrix_result_panel)
+            self.canvas_frame = self.tool_menu_canvas.create_window(0, 0, anchor = "nw", window = self.corl_matrix_menu_submenu_frame)
         elif not action_state_open:
             self.mpannel_vsblty_state["corl_matrix_frame"] = False
             self.OpenVariableSelectionPanel(False)
             self.result_panel.remove(self.corl_matrix_result_panel)
+            self.tool_menu_canvas.delete("all")
 
 
       
