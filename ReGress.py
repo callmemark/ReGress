@@ -31,6 +31,7 @@ from ttkthemes import ThemedTk
 
 from idlelib.tooltip import Hovertip
 
+from time import sleep
 
 class ReGress():
     def __init__(self, application):
@@ -500,10 +501,8 @@ class ReGress():
             )
 
         # create frame to display selected variables in x axis
-        xaxis_var_disp_frame_label = ttk.Label(text = "(X) Operation Vars")
-        self.xaxis_var_disp_frame = ttk.LabelFrame(
+        self.xaxis_var_disp_frame = ttk.Frame(
             operation_var_container_panel,
-            labelwidget = xaxis_var_disp_frame_label,
             style = "nav_tool.TLabelframe.Label"
             )
 
@@ -517,10 +516,8 @@ class ReGress():
         
 
         # create frame to display selected variables in y axis
-        yaxis_var_disp_frame_label = ttk.Label(text = "Y Axis")
-        self.yaxis_var_disp_frame = ttk.LabelFrame(
+        self.yaxis_var_disp_frame = ttk.Frame(
             key_var_container_panel, 
-            labelwidget = yaxis_var_disp_frame_label,
             style = "nav_tool.TLabelframe.Label"
             )
 
@@ -567,10 +564,13 @@ class ReGress():
         elif axis == "Y":
             self.reg_y_axis = val
             self.RefreshYVarSelectionList(self.df_headers)
-        self.OpenVariableSelectionPanel(True)
         
-        self.initSideBarPanelWidth()
+        var_select_panel = self.variable_selection_frame.winfo_height()
 
+        self.OpenVariableSelectionPanel(True)
+        self.initSideBarPanelWidth()
+        
+        
 
     def RefreshXVarSelectionList(self, df_headers_list_arg):
         # Remove all the widgets in the sidplay frame to prevent widgets with same text value
@@ -586,7 +586,6 @@ class ReGress():
         # function AddValueToVarList to add new label displaying varibale names in the frame
         for val in self.reg_x_axis:
             self.AddValueToVarList(val, "X")
-
 
  
     def RefreshYVarSelectionList(self, df_header_list_arg):
@@ -789,11 +788,12 @@ class ReGress():
         new_width = event.width
         self.variable_selection_canvas.itemconfig(self.varselect_canvas_frame, width = new_width - btns_to_slidebar_margin)
     
-    
+
     def initSideBarPanelWidth(self):
         sidebar_width = self.side_bar_panel.winfo_width()
         self.tool_menu_canvas.itemconfig(self.canvas_frame, width = sidebar_width)
         self.variable_selection_canvas.itemconfig(self.varselect_canvas_frame, width = sidebar_width)
+
 
 
     def InitDataFrameEditorResultPanel(self):
@@ -835,6 +835,7 @@ class ReGress():
         self.RefreshXVarSelectionList(update_df.columns)
         self.RefreshYVarSelectionList(update_df.columns)
 
+        self.OpenVariableSelectionPanel(True)
         self.UpdateSideMenuDisp("df_editor_frame")
 
 
@@ -1223,6 +1224,11 @@ class ReGress():
     def OpenVariableSelectionPanel(self, call_state_open = bool):
         if call_state_open == True:
             self.varselect_canvas_frame = self.variable_selection_canvas.create_window(0, 0, anchor = "nw", window = self.variable_selection_frame)
+
+            self.variable_selection_canvas.update_idletasks()
+            self.variable_selection_canvas.configure(scrollregion = self.variable_selection_canvas.bbox("all"),
+                                                    yscrollcommand = self.var_selectn_panel_scroll_bar.set)
+            self.variable_selection_canvas.bind("<Configure>", self.oneventScrollUpdateVarSelectPanelWidth)
         elif call_state_open == False:
             self.variable_selection_canvas.delete("all")
 
@@ -1240,7 +1246,6 @@ class ReGress():
             self.result_panel.remove(self.df_table_result_panel)
             self.tool_menu_canvas.delete("all")
             
-
 
             
     def OpenMMREGFrame(self, action_state_open = bool):
@@ -1262,12 +1267,10 @@ class ReGress():
             self.mpannel_vsblty_state["corl_matrix_frame"] = True
             self.OpenVariableSelectionPanel(True)
             self.result_panel.add(self.corl_matrix_result_panel)
-            #self.tool_submenu_config_panel.add(self.corl_matrix_menu_submenu_frame)
         elif not action_state_open:
             self.mpannel_vsblty_state["corl_matrix_frame"] = False
             self.OpenVariableSelectionPanel(False)
             self.result_panel.remove(self.corl_matrix_result_panel)
-            #self.tool_submenu_config_panel.remove(self.corl_matrix_menu_submenu_frame)
 
 
       
@@ -1276,12 +1279,10 @@ class ReGress():
             self.mpannel_vsblty_state["logistic_reg_frame"] = True
             self.OpenVariableSelectionPanel(True)
             self.result_panel.add(self.logistic_reg_result_panel)
-            #self.tool_submenu_config_panel.add(self.logistic_reg_menu_submenu_frame)
         elif not action_state_open:
             self.mpannel_vsblty_state["logistic_reg_frame"] = False
             self.OpenVariableSelectionPanel(False)
             self.result_panel.remove(self.logistic_reg_result_panel)
-            #self.tool_submenu_config_panel.remove(self.logistic_reg_menu_submenu_frame)
 
     
     def UpdateSideMenuDisp(self, btn_click_arg):
