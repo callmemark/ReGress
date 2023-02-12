@@ -76,6 +76,9 @@ class ReGress():
         self.orange_theme_color = "#fcba03"
         self.redorange_theme_color = "#fc4c00"
 
+
+        self.SEABORN_PLOT_THEMES = ["App Default", "darkgrid", "whitegrid", "dark", "white", "ticks"]
+
         # plot styling
         sns.set(rc={
             'axes.facecolor':'#171717', 
@@ -245,7 +248,25 @@ class ReGress():
             background = self.secondary_accent_color,
             bordercolor = self.secondary_accent_color
             )
-        
+    
+
+    def setSeabornPlotSysDefault(self):
+        # plot styling
+        sns.set(rc={
+            'axes.facecolor':'#171717', 
+            'figure.facecolor':'#171717',
+            'grid.linewidth' : 0.2,
+            'grid.color' : "#6e6e6e",
+            'axes.spines.top' : False,
+            'axes.spines.right' : False,
+            'xtick.color' : self.font_color_white,
+            'ytick.color' : self.font_color_white,
+            'axes.titlecolor' : self.font_color_white,
+            'axes.labelcolor' : self.font_color_white,
+            })
+
+        sns.set_palette("pastel")
+
 
     def InitApp(self):
         self.InitToolNavFrame()
@@ -770,7 +791,7 @@ class ReGress():
         restore_orig_df_btn = ttk.Button(
             self.df_editing_tool_menu_frame,
             text = "Restore Original Dataset",
-            style = "important.TButton",
+            style = "orange_btntheme.TButton",
             command = lambda: self.UpdateDataFrameEditorResultFrame(
                 self.dataset_backup_copy
                 )
@@ -781,7 +802,7 @@ class ReGress():
         refresh_data_frame_btn = ttk.Button(
             self.df_editing_tool_menu_frame,
             text = "Refresh Changes",
-            style = "important.TButton",
+            style = "orange_btntheme.TButton",
             command = lambda: self.UpdateVarSelectionFrame()
             )
 
@@ -913,7 +934,6 @@ class ReGress():
  
     def InitMMREGToolMenuFrame(self):
         # create the main frame or a root frame of the tool menu for multiple linear regresssion
-        mmreg_frame_label = ttk.Label(text="Multiple Linear Regression")
         self.mmreg_tool_menu_submenu_frame = ttk.Frame(
             self.tool_menu_canvas,
             padding = 1,
@@ -1004,7 +1024,7 @@ class ReGress():
         diplay_plot_btn = ttk.Button(
             self.mmreg_tool_menu_submenu_frame, 
             text = "Refresh Plot Output", 
-            style = "important.TButton",
+            style = "orange_btntheme.TButton",
             command = lambda: self.MMREGUpdateResultOutputPlot(
                 fit_intercept_param = fit_intcept_param_strvar.get(),
                 positive_coef_param = positive_coef_mmreg_param_strvar.get(),
@@ -1047,7 +1067,7 @@ class ReGress():
 
     def MMREGUpdateResultOutputPlot(self, fit_intercept_param, positive_coef_param, njob_param, stat_ouput_source, plot_title, plot_xaxis_label, plot_yaxis_label):
         # check variable valur
-
+        self.setSeabornPlotSysDefault()
         if stat_ouput_source ==  "":
             stat_ouput_source = "StatModel"
 
@@ -1139,12 +1159,25 @@ class ReGress():
             width = self.tool_menu_frame_width
             )
 
+
+        corlmatrix_plot_title_menu = self.grouped_widgets.create_labeled_text_entry(
+            root_frame = self.corl_matrix_menu_submenu_frame,
+            frame_text_label = "Plot Title",
+            hover_text = "Add title text to  plot"
+            )
+
+        corlmatrix_plot_input_frame = corlmatrix_plot_title_menu["parent_frame"]
+        corlmatrix_plot_input_string_var = corlmatrix_plot_title_menu["string_var"]
+
+
         refresh_corl_maatrix_plot = ttk.Button(
             self.corl_matrix_menu_submenu_frame, 
             text = "Refresh Correlation Matrix Output",
-            style = "important.TButton",
-            command = lambda: self.UpdateCorrelationMatrixResultFrame())
+            style = "orange_btntheme.TButton",
+            command = lambda: self.UpdateCorrelationMatrixResultFrame(corlmatrix_plot_input_string_var.get()))
         
+
+        corlmatrix_plot_input_frame.pack(fill = X, padx = self.tool_menu_padx, pady = self.tool_menu_pady, ipady = self.btn_height)
         refresh_corl_maatrix_plot.pack(fill = X, padx = self.tool_menu_padx, pady = self.tool_menu_pady, ipady = self.btn_height)
 
 
@@ -1162,7 +1195,8 @@ class ReGress():
 
 
  
-    def UpdateCorrelationMatrixResultFrame(self):
+    def UpdateCorrelationMatrixResultFrame(self, plot_title = ""):
+        self.setSeabornPlotSysDefault()
         for widget in self.corl_matrix_plotting_panel.winfo_children():
             widget.destroy()
 
@@ -1172,7 +1206,7 @@ class ReGress():
         ax1 = fig.subplots()
 
         corrMatrix = self.dataset[self.reg_x_axis].corr()
-        sns.heatmap(corrMatrix, annot=True, ax = ax1)
+        sns.heatmap(corrMatrix, annot=True, ax = ax1).set(title = plot_title)
 
         # add the plot and the tool control of matplotlib to the mmreg_res_plot_panel
         canvas = FigureCanvasTkAgg(fig, master = self.corl_matrix_plotting_panel) 
@@ -1186,24 +1220,48 @@ class ReGress():
         
  
     def InitLogisticRegToolMenuFrame(self):
-        logistic_reg_frame_label = ttk.Label(text="Logistic Regression")
-        self.logistic_reg_menu_submenu_frame = ttk.Labelframe(
-            self.tool_submenu_config_panel,
-            labelwidget = logistic_reg_frame_label,
-            padding = 1,
-            height = self.main_ui_height,
-            width = self.tool_menu_frame_width,
-            #style = 'tool_lframe.TLabelframe'
+        self.logistic_reg_menu_submenu_frame = ttk.Frame(
+                self.tool_menu_canvas,
+                padding = 1,
+                height = self.main_ui_height,
+                width = self.tool_menu_frame_width
             )
 
+
+        plot_themes_menu = self.grouped_widgets.create_menu_btn(
+            frame_parent_arg = self.logistic_reg_menu_submenu_frame, 
+            mbtn_text_display = "Variables",
+            menu_value_arg = self.SEABORN_PLOT_THEMES
+            )
+
+        plot_theme_mnu_btn = plot_themes_menu["menu_button"]
+        plot_theme_string_var = plot_themes_menu["string_var"]
+
+
+        logreg_plot_title_menu = self.grouped_widgets.create_labeled_text_entry(
+                root_frame = self.logistic_reg_menu_submenu_frame,
+                frame_text_label = "Plot Title",
+                hover_text = "Add title text to  plot"
+            )
+
+        logreg_plot_title_frame = logreg_plot_title_menu["parent_frame"]
+        logreg_plot_title_string_var = logreg_plot_title_menu["string_var"]
+
+
+
         refresh_logistic_reg_plot = ttk.Button(
-            self.logistic_reg_menu_submenu_frame, 
-            text = "Refresh Logistic Regression Output",
-            style = "important.TButton",
-            command = lambda: self.UpdateLogisticRegResultFrame())
+                self.logistic_reg_menu_submenu_frame, 
+                text = "Refresh Logistic Regression Output",
+                style = "orange_btntheme.TButton",
+                command = lambda: self.UpdateLogisticRegResultFrame(plot_theme_string_var.get(), logreg_plot_title_string_var.get())
+            )
         
+
+        plot_theme_mnu_btn.pack(fill = X, padx = self.tool_menu_padx, pady = self.tool_menu_pady, ipady = self.btn_height)
+        logreg_plot_title_frame.pack(fill = X, padx = self.tool_menu_padx, pady = self.tool_menu_pady, ipady = self.btn_height)
         refresh_logistic_reg_plot.pack(fill = X, padx = self.tool_menu_padx, pady = self.tool_menu_pady, ipady = self.btn_height)
-    
+        
+
 
   
     def InitLogisticRegResultFrame(self):
@@ -1219,24 +1277,31 @@ class ReGress():
     
 
 
-    def UpdateLogisticRegResultFrame(self):
+    def UpdateLogisticRegResultFrame(self, plot_theme, plot_title = ""):
         for widget in self.logistic_reg_plotting_panel.winfo_children():
             widget.destroy()
 
+        if plot_theme in self.SEABORN_PLOT_THEMES:
+            if plot_theme == "App Default":
+                self.setSeabornPlotSysDefault()
+            elif plot_theme != "App Default":
+                sns.set_style(plot_theme)
 
         #plt.style.use("dark_background")
         fig = Figure(figsize=(5, 4), dpi=100)
         ax1 = fig.subplots()
 
         sns.regplot(
-            x = self.dataset[self.reg_x_axis], 
+            x = self.dataset[self.reg_x_axis[0]], 
             y = self.dataset[self.reg_y_axis], 
             data = self.dataset, 
             logistic = True, 
             ci = None, 
-            ax = ax1)
+            ax = ax1).set(title = plot_title)
 
-        # add the plot and the tool control of matplotlib to the mmreg_res_plot_panel
+        print("Logistic regression x var: ", self.reg_x_axis[0])
+
+        # add the plot and the tool control of matplotlib to the logistic_reg_plotting_panel
         canvas = FigureCanvasTkAgg(fig, master = self.logistic_reg_plotting_panel) 
         canvas.draw()
         canvas.get_tk_widget().pack(side = TOP, fill = BOTH, expand=1)
@@ -1307,10 +1372,12 @@ class ReGress():
             self.mpannel_vsblty_state["logistic_reg_frame"] = True
             self.OpenVariableSelectionPanel(True)
             self.result_panel.add(self.logistic_reg_result_panel)
+            self.canvas_frame = self.tool_menu_canvas.create_window(0, 0, anchor = "nw", window = self.logistic_reg_menu_submenu_frame)
         elif not action_state_open:
             self.mpannel_vsblty_state["logistic_reg_frame"] = False
             self.OpenVariableSelectionPanel(False)
             self.result_panel.remove(self.logistic_reg_result_panel)
+            self.tool_menu_canvas.delete("all")
 
     
     def UpdateSideMenuDisp(self, btn_click_arg):
